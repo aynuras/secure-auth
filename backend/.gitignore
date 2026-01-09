@@ -1,0 +1,27 @@
+# PyCharm (JetBrains)
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Python
+venv/
+ENV/
+env/
+.env
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Django
+db.sqlite3
+/static/
+/media/
+/staticfiles/
+local_settings.py
+
+# Diğer (Sistem)
+.DS_Store
+Thumbs.db
