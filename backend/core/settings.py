@@ -21,17 +21,14 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Gizli anahtarı .env'den al
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# Debug ayarını .env'den al
 DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +49,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'users.CustomUser'
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', # EN ÜSTE YAKIN OLMALI
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -153,6 +150,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle', # Kayıtsız kullanıcılar için
+        'rest_framework.throttling.UserRateThrottle', # Kayıtlı kullanıcılar için
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',      # Genel anonim sınır
+        'user': '1000/day',     # Genel kullanıcı sınırı
+        'register_limit': '5/hour', # Bir IP saatte en fazla 5 kayıt açabilsin
+    }
 }
 
 

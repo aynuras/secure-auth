@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.conf import settings
+import uuid
 
 
 # Tablo temsil etmez, veritabanına veri kaydedileceği zaman kuralları uygular
@@ -17,10 +19,11 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
 
-        if extra_fields.get('is_staff'):
+        if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser için is_staff=True olmalı.')
-        if extra_fields.get('is_superuser'):
+        if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser için is_superuser=True olmalı.')
 
         return self.create_user(email, password, **extra_fields)
@@ -28,6 +31,13 @@ class CustomUserManager(BaseUserManager):
 
 # Veritabanındaki tabloyu temsil ve Django'nun AbstractUser sınıfından miras alır
 class CustomUser(AbstractUser):
+    # Standart ID yerine UUID tanımlıyoruz
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
     username = None  # Username alanını devre dışı bırakıyoruz
     email = models.EmailField(unique=True, verbose_name='Email Adresi')
 
@@ -38,3 +48,32 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class AuditLog(models.Model):
+    ACTION_CHOICES = [
+        ('REGISTER', 'Kayıt Olma'),
+        ('LOGIN', 'Giriş Yapma'),
+        ('LOGOUT', 'Çıkış Yapma'),
+        ('PASSWORD_CHANGE', 'Şifre Değiştirme'),
+    ]
+
+    # user silinse bile logun kalması için SET_NULL kullandık
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='audit_logs'
+    )
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True) # Tarayıcı/Cihaz bilgisi
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Denetim Kaydı"
+        verbose_name_plural = "Denetim Kayıtları"
+        ordering = ['-created_at'] # En yeni log en üstte
+
+    def __str__(self):
+        return f"{self.user} - {self.action} - {self.created_at}"
