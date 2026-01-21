@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     # Üçüncü Parti
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
 ]
 
@@ -145,6 +146,7 @@ STATIC_URL = 'static/'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'users.authenticate.CookieJWTAuthentication',   # Özel sınıf
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
@@ -155,9 +157,10 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle', # Kayıtlı kullanıcılar için
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',      # Genel anonim sınır
-        'user': '1000/day',     # Genel kullanıcı sınırı
-        'register_limit': '5/hour', # Bir IP saatte en fazla 5 kayıt açabilsin
+        'anon': '100/day',      # Giriş yapmayan kullanıcı istek sınırı
+        'user': '1000/day',     # Giriş yapan kullanıcı istek sınırı
+        'register': '5/hour',   # Register denemeleri için
+        'login': '10/minute',   # Login denemeleri için
     }
 }
 
@@ -168,3 +171,16 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+
+# Sadece HTTPS üzerinden gönderilmesini sağlar (Canlı ortamda)
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
+# JavaScript'in çerezlere erişimini engeller (XSS Koruması)
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# CSRF saldırılarını önlemek için sıkılaştırılmış kontrol
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'

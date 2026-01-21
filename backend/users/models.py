@@ -46,10 +46,16 @@ class CustomUser(AbstractUser):
 
     objects = CustomUserManager()
 
+    @property
+    def full_name(self):
+        """Ad ve soyadı birleştirip tek bir string döner."""
+        return f"{self.first_name} {self.last_name}".strip()
+
     def __str__(self):
         return self.email
 
 
+# Audit Log
 class AuditLog(models.Model):
     ACTION_CHOICES = [
         ('REGISTER', 'Kayıt Olma'),
