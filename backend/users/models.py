@@ -75,6 +75,7 @@ class AuditLog(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField(null=True, blank=True) # Tarayıcı/Cihaz bilgisi
     created_at = models.DateTimeField(auto_now_add=True)
+    is_success = models.BooleanField(default=True, verbose_name="İşlem Başarılı mı?")
 
     class Meta:
         verbose_name = "Denetim Kaydı"
