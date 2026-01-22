@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideAppInitializer } from '@angular/core';
 import { inject } from '@angular/core';
 
@@ -19,6 +19,7 @@ export const appConfig: ApplicationConfig = {
     // Angular'ın "İnternete çıkış yapabilirsin" emridir, bu eklenmezse ApiService çalışmaz
     provideHttpClient(
       // "İnternete çıkarken her seferinde authInterceptor'a uğra" diyoruz, böylece her isteğe otomatik olarak o Django başlıkları ve cookie izinleri eklenecek
+      withFetch(),
       withInterceptors([authInterceptor]), // Her istekte interceptor çalışsın
     ),
 

@@ -16,7 +16,7 @@ export class AuthService {
   private api = inject(ApiService);
 
   // Endpoint prefix'i - Django'daki yapıya göre
-  private readonly AUTH_PATH = '/api/v1/auth';
+  private readonly AUTH_PATH = 'api/v1/auth';
 
   // 1.Signal: Kullanıcı bilgisini saklayan "Reaktif Değişken"
   // null ise kimse giriş yapmamış demektir
@@ -28,7 +28,7 @@ export class AuthService {
 
   // Kimlik Doğrulama Kontrol Fonksiyonu
   checkAuth() {
-    return this.api.get<User>(`${this.AUTH_PATH}/user/`).pipe(
+    return this.api.get<User>(`${this.AUTH_PATH}/profile/`).pipe(
       tap({
         next: (user) => this.currentUser.set(user),
         error: () => this.currentUser.set(null),

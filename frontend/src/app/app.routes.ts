@@ -5,7 +5,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./features/landing-page/landing-page.component').then((m) => m.LandingPageComponent),
+      import('./features/landing-page/landingPage.component').then((m) => m.LandingPageComponent),
   },
   {
     path: 'login',
