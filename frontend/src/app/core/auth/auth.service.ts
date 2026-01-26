@@ -1,6 +1,6 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { ApiService } from '../services/api.service';
-import { tap } from 'rxjs';
+import { tap, catchError, of } from 'rxjs';
 
 // Kullanıcı bilgilerinin tipi (Type Safety - Güvenlik için önemli)
 export interface User {
@@ -29,9 +29,10 @@ export class AuthService {
   // Kimlik Doğrulama Kontrol Fonksiyonu
   checkAuth() {
     return this.api.get<User>(`${this.AUTH_PATH}/profile/`).pipe(
-      tap({
-        next: (user) => this.currentUser.set(user),
-        error: () => this.currentUser.set(null),
+      tap((user) => this.currentUser.set(user)), // Başarılı olursa kullanıcıyı set et
+      catchError(() => {
+        this.currentUser.set(null); // Hata olursa (401 vb.) kullanıcıyı null yap
+        return of(null); // Hatayı yut ve akışın bozulmadan devam etmesini sağla
       }),
     );
   }
