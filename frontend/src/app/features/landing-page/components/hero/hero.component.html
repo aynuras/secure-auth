@@ -1,1 +1,48 @@
-<p>hero works!</p>
+<div class="flex flex-col gap-4 lg:gap-8">
+    <!-- Logo and Navbar -->
+    <div class="flex flex-row justify-between w-full items-center relative z-50">
+        <app-logo></app-logo>
+        <app-navbar></app-navbar>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 mt-2 lg:mt-4 _gap-12 items-center relative">
+        <div class="flex flex-col gap-6 relative z-10" style="font-family: Inter;">
+            <!-- Badge -->
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full w-fit">
+                <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                <span class="text-xs font-semibold text-indigo-400 tracking-wide uppercase">v1.0 Stable Release</span>
+            </div>
+
+            <h1 class="font-extrabold text-4xl lg:text-5xl tracking-tight leading-tight">
+                <span class="bg-clip-text text-transparent bg-linear-to-r from-white via-indigo-200 to-indigo-400">
+                    Enterprise-Grade Identity
+                </span>
+                <br>
+                <span>Access Management</span>
+            </h1>
+
+            <p class="font-light text-[#c1c6ca] text-lg leading-relaxed max-w-xl">
+                Angular & Django tabanlı, <span class="text-indigo-400 font-medium">"Defense in Depth"</span>
+                stratejisiyle inşa edilmiş, uçtan uca güvenli ve denetlenebilir bir kimlik doğrulama ekosistemi.
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-row gap-4 mt-2">
+                <app-github-button label="Kaynak Koduna Göz At"
+                    link="https://github.com/secure-auth"></app-github-button>
+            </div>
+        </div>
+
+        <div class="w-full relative z-0 flex justify-center">
+            <!-- Glow Effect Behind Image -->
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none">
+            </div>
+
+            <img src="hero.png"
+                class="relative z-10 drop-shadow-2xl hover:scale-[1.02] transition-transform duration-500" />
+        </div>
+    </div>
+</div>
