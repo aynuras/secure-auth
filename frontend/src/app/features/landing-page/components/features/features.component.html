@@ -1,0 +1,8 @@
+<div class="flex flex-col gap-6">
+    <app-page-header title="Özellikler"></app-page-header>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <app-feature-card *ngFor="let feature of features" [title]="feature.title" [subtitle]="feature.subtitle"
+            [description]="feature.description" [iconName]="feature.iconName">
+        </app-feature-card>
+    </div>
+</div>
