@@ -1,0 +1,57 @@
+<!-- Container -->
+<div class="flex items-center" style="font-family: 'Montserrat';">
+
+    <!-- Desktop Navbar -->
+    <nav
+        class="hidden lg:flex items-center gap-1 text-sm font-medium bg-white/5 backdrop-blur-md p-1.5 rounded-full border border-white/10 shadow-lg">
+
+        <!-- Links Container -->
+        <div class="flex items-center gap-6 px-6">
+            <a (click)="scrollTo('features')"
+                class="cursor-pointer text-gray-300 hover:text-white transition-colors duration-300">Özellikler</a>
+            <a (click)="scrollTo('diagram')"
+                class="cursor-pointer text-gray-300 hover:text-white transition-colors duration-300">Diyagram</a>
+            <a (click)="scrollTo('architecture')"
+                class="cursor-pointer text-gray-300 hover:text-white transition-colors duration-300">Mimari</a>
+            <a (click)="scrollTo('securityDetails')"
+                class="cursor-pointer text-gray-300 hover:text-white transition-colors duration-300">Güvenlik</a>
+        </div>
+
+        <!-- Login Button -->
+        <a href="/login"
+            class="hidden lg:flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)]">
+            <span>Giriş Yap</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3">
+                </path>
+            </svg>
+        </a>
+    </nav>
+
+    <!-- Mobile Menu Button Wrapper -->
+    <div class="lg:hidden">
+        <button mat-icon-button [matMenuTriggerFor]="menu"
+            class="text-[#f9fafb]! hover:text-[#4f46e5]! transition-colors duration-300 rounded-md!">
+            <mat-icon>menu</mat-icon>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Content -->
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="scrollTo('features')">
+            <span>Özellikler</span>
+        </button>
+        <button mat-menu-item (click)="scrollTo('diagram')">
+            <span>Şema</span>
+        </button>
+        <button mat-menu-item (click)="scrollTo('architecture')">
+            <span>Mimari</span>
+        </button>
+        <button mat-menu-item (click)="scrollTo('securityDetails')">
+            <span>Güvenlik Detayları</span>
+        </button>
+        <button mat-menu-item (click)="scrollTo('footer')">
+            <span>Hakkında</span>
+        </button>
+    </mat-menu>
+</div>

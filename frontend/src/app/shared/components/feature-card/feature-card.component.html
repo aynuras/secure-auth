@@ -1,0 +1,47 @@
+<div
+    class="group relative h-full p-6 bg-[#0F1320] border border-gray-800/60 rounded-lg transition-all duration-300 hover:border-indigo-500/50 hover:bg-[#131726] hover:shadow-[0_0_30px_rgba(79,70,229,0.1)] overflow-hidden">
+
+    <!-- Tech Corners -->
+    <div
+        class="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-gray-700/50 rounded-tl-lg group-hover:border-indigo-500 transition-colors duration-300">
+    </div>
+    <div
+        class="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-gray-700/50 rounded-tr-lg group-hover:border-indigo-500 transition-colors duration-300">
+    </div>
+    <div
+        class="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-gray-700/50 rounded-bl-lg group-hover:border-indigo-500 transition-colors duration-300">
+    </div>
+    <div
+        class="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-gray-700/50 rounded-br-lg group-hover:border-indigo-500 transition-colors duration-300">
+    </div>
+
+    <!-- Inner Glow -->
+    <div
+        class="absolute inset-0 bg-linear-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col h-full">
+        <!-- Header: Icon & Title -->
+        <div class="flex items-start gap-4 mb-4">
+            <div
+                class="shrink-0 flex items-center justify-center w-12 h-12 rounded-lg bg-gray-900 border border-gray-700/50 group-hover:border-indigo-500/50 group-hover:bg-indigo-900/10 transition-all duration-300 shadow-inner">
+                <span
+                    class="material-icons-round text-gray-400 group-hover:text-indigo-400 transition-colors duration-300 text-[24px]!">{{
+                    iconName }}</span>
+            </div>
+            <div class="flex flex-col justify-center">
+                <h3 class="text-base font-bold text-gray-100 font-['Montserrat'] tracking-wide group-hover:text-white">
+                    {{ title }}</h3>
+                <span class="text-xs font-medium text-indigo-400/80 font-mono uppercase tracking-wider mt-0.5">{{
+                    subtitle }}</span>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <p
+            class="text-gray-400 text-sm leading-relaxed font-['Inter'] group-hover:text-gray-300 transition-colors duration-300 border-t border-gray-800/50 pt-4 mt-2">
+            {{ description }}
+        </p>
+    </div>
+</div>
