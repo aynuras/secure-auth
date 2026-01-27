@@ -1,0 +1,284 @@
+﻿<div class="flex flex-col gap-8 w-full mx-auto py-12">
+    <app-page-header title="Kimlik Doğrulama Süreci"></app-page-header>
+
+    <!-- Tech Card Container -->
+    <div
+        class="relative w-full rounded-2xl p-1 bg-[#0b0f19] border border-indigo-500/20 shadow-[0_0_40px_-10px_rgba(79,70,229,0.15)] overflow-hidden group">
+        <!-- Tech Decorations -->
+        <div
+            class="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-indigo-500/30 rounded-tl-2xl z-10 transition-all duration-700 group-hover:border-indigo-500/60 group-hover:w-24 group-hover:h-24">
+        </div>
+        <div
+            class="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-indigo-500/30 rounded-tr-2xl z-10 transition-all duration-700 group-hover:border-indigo-500/60 group-hover:w-24 group-hover:h-24">
+        </div>
+        <div
+            class="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-indigo-500/30 rounded-bl-2xl z-10 transition-all duration-700 group-hover:border-indigo-500/60 group-hover:w-24 group-hover:h-24">
+        </div>
+        <div
+            class="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-indigo-500/30 rounded-br-2xl z-10 transition-all duration-700 group-hover:border-indigo-500/60 group-hover:w-24 group-hover:h-24">
+        </div>
+
+        <!-- Scanline Effect -->
+        <div
+            class="absolute inset-0 bg-[linear-gradient(rgba(18,16,29,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-0 opacity-20 pointer-events-none bg-size[100%_4px,6px_100%]">
+        </div>
+
+        <!-- Inner Card -->
+        <div class="relative z-1 bg-[#0b0f19]/90 backdrop-blur-sm p-4 md:p-8 rounded-xl overflow-hidden">
+            <!-- SVG Container: Width increased to 1200 for wider aspect ratio -->
+            <svg viewBox="0 0 1200 600" class="w-full h-auto font-mono" preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg">
+
+                <defs>
+                    <marker id="arrow-white" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"
+                        markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#e2e8f0" />
+                    </marker>
+                    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"
+                        markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#f87171" />
+                    </marker>
+                    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"
+                        markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#fb923c" />
+                    </marker>
+                    <marker id="arrow-yellow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"
+                        markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#facc15" />
+                    </marker>
+                    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"
+                        markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#4ade80" />
+                    </marker>
+                    <marker id="arrow-purple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"
+                        markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#c084fc" />
+                    </marker>
+                    <marker id="arrow-cyan" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"
+                        markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#22d3ee" />
+                    </marker>
+                    <marker id="arrow-gold" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"
+                        markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#fbbf24" />
+                    </marker>
+
+                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+
+                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#6366f1" stroke-width="0.5"
+                            stroke-opacity="0.1" />
+                    </pattern>
+                </defs>
+
+                <!-- Grid Background in SVG -->
+                <rect width="100%" height="100%" fill="url(#grid)" />
+
+                <!-- Swimlanes (Extended Width) -->
+                <g class="swimlanes">
+                    <!-- Client Lane (150) -->
+                    <text x="150" y="30" text-anchor="middle" fill="#60a5fa" font-weight="bold" font-size="14"
+                        letter-spacing="2">CLIENT_SIDE</text>
+                    <line x1="150" y1="45" x2="150" y2="580" stroke="#60a5fa" stroke-width="1" stroke-dasharray="4,4"
+                        opacity="0.2" />
+
+                    <!-- Server Lane (600) -->
+                    <text x="600" y="30" text-anchor="middle" fill="#818cf8" font-weight="bold" font-size="14"
+                        letter-spacing="2">SERVER_SIDE</text>
+                    <line x1="600" y1="45" x2="600" y2="580" stroke="#818cf8" stroke-width="1" stroke-dasharray="4,4"
+                        opacity="0.2" />
+
+                    <!-- DB Lane (1050) -->
+                    <text x="1050" y="30" text-anchor="middle" fill="#c084fc" font-weight="bold" font-size="14"
+                        letter-spacing="2">DATABASE_LOGS</text>
+                    <line x1="1050" y1="45" x2="1050" y2="580" stroke="#c084fc" stroke-width="1" stroke-dasharray="4,4"
+                        opacity="0.2" />
+                </g>
+
+                <!-- Step 1: Client Validation (Loop) -->
+                <g class="step step-1" opacity="0.9">
+                    <path d="M150,60 L230,60 L230,90 L160,90" fill="none" stroke="#3b82f6" stroke-width="2"
+                        stroke-dasharray="5,5" marker-end="url(#arrow-cyan)" filter="drop-shadow(0 0 5px #3b82f6)" />
+                    <text x="240" y="75" fill="#3b82f6" font-size="12">
+                        <tspan x="240" dy="-6">1. Zod/Reactive Validation</tspan>
+                        <tspan x="240" dy="14" font-size="10" opacity="0.8">{{ '{' }}Zero Trust Start{{ '}' }}</tspan>
+                    </text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="0s;anim12.end" />
+                        <set attributeName="opacity" to="0" begin="anim1.end" />
+                        <animateMotion id="anim1" begin="0s;anim12.end" dur="1.2s"
+                            path="M150,60 L230,60 L230,90 L160,90" fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 2: POST /login (Client -> Server: 150 -> 600) -->
+                <g class="step step-2" opacity="0.9">
+                    <line x1="150" y1="120" x2="590" y2="120" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8,8"
+                        marker-end="url(#arrow-white)" filter="drop-shadow(0 0 5px #94a3b8)" />
+                    <text x="375" y="110" text-anchor="middle" fill="#94a3b8" font-size="12">2. POST /login
+                        (HTTPS)</text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim1.end" />
+                        <set attributeName="opacity" to="0" begin="anim2.end" />
+                        <animateMotion id="anim2" begin="anim1.end" dur="0.8s" path="M150,120 L590,120" fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 3: Strict CORS (Server Loop: 600) -->
+                <g class="step step-3" opacity="0.9">
+                    <path d="M600,150 L680,150 L680,180 L610,180" fill="none" stroke="#ef4444" stroke-width="2"
+                        stroke-dasharray="5,5" marker-end="url(#arrow-red)" filter="drop-shadow(0 0 5px #ef4444)" />
+                    <text x="690" y="165" fill="#ef4444" font-size="12">
+                        <tspan x="690" dy="-6">3. Strict CORS & WAF</tspan>
+                        <tspan x="690" dy="14" font-size="10" opacity="0.8">{{ '{' }}Session Isolation{{ '}' }}</tspan>
+                    </text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim2.end" />
+                        <set attributeName="opacity" to="0" begin="anim3.end" />
+                        <animateMotion id="anim3" begin="anim2.end" dur="1.0s"
+                            path="M600,150 L680,150 L680,180 L610,180" fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 4: Brute Force Check (Server Loop: 600) -->
+                <g class="step step-4" opacity="0.9">
+                    <path d="M600,200 L680,200 L680,230 L610,230" fill="none" stroke="#f97316" stroke-width="2"
+                        stroke-dasharray="5,5" marker-end="url(#arrow-orange)" filter="drop-shadow(0 0 5px #f97316)" />
+                    <text x="690" y="215" fill="#f97316" font-size="12">
+                        <tspan x="690" dy="-6">4. Brute Force Check</tspan>
+                        <tspan x="690" dy="14" font-size="10" opacity="0.8">{{ '{' }}Account Lockout{{ '}' }}</tspan>
+                    </text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim3.end" />
+                        <set attributeName="opacity" to="0" begin="anim4.end" />
+                        <animateMotion id="anim4" begin="anim3.end" dur="1.0s"
+                            path="M600,200 L680,200 L680,230 L610,230" fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 5: Serializer (Server Loop: 600) -->
+                <g class="step step-5" opacity="0.9">
+                    <path d="M600,250 L680,250 L680,280 L610,280" fill="none" stroke="#eab308" stroke-width="2"
+                        stroke-dasharray="5,5" marker-end="url(#arrow-yellow)" filter="drop-shadow(0 0 5px #eab308)" />
+                    <text x="690" y="265" fill="#eab308" font-size="12">
+                        <tspan x="690" dy="-6">5. Django Serializer</tspan>
+                        <tspan x="690" dy="14" font-size="10" opacity="0.8">{{ '{' }}Data Integrity{{ '}' }}</tspan>
+                    </text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim4.end" />
+                        <set attributeName="opacity" to="0" begin="anim5.end" />
+                        <animateMotion id="anim5" begin="anim4.end" dur="1.0s"
+                            path="M600,250 L680,250 L680,280 L610,280" fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 6: Password Hashing (Server 600 -> DB 1050) -->
+                <g class="step step-6" opacity="0.9">
+                    <line x1="600" y1="310" x2="1040" y2="310" stroke="#22c55e" stroke-width="2" stroke-dasharray="8,8"
+                        marker-end="url(#arrow-green)" filter="drop-shadow(0 0 5px #22c55e)" />
+                    <text x="825" y="300" text-anchor="middle" fill="#22c55e" font-size="12">6. Password Hashing</text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim5.end" />
+                        <set attributeName="opacity" to="0" begin="anim6.end" />
+                        <animateMotion id="anim6" begin="anim5.end" dur="0.8s" path="M600,310 L1040,310"
+                            fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 7: Return Hash (DB 1050 -> Server 600) -->
+                <g class="step step-7" opacity="0.9">
+                    <line x1="1050" y1="340" x2="610" y2="340" stroke="#22c55e" stroke-width="2" stroke-dasharray="8,8"
+                        marker-end="url(#arrow-green)" opacity="0.8" filter="drop-shadow(0 0 5px #22c55e)" />
+                    <text x="830" y="330" text-anchor="middle" fill="#22c55e" font-size="12">7. Return Hash</text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim6.end" />
+                        <set attributeName="opacity" to="0" begin="anim7.end" />
+                        <animateMotion id="anim7" begin="anim6.end" dur="0.8s" path="M1050,340 L610,340"
+                            fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 8: Argon2 Verification (Server Loop: 600) -->
+                <g class="step step-8" opacity="0.9">
+                    <path d="M600,380 L680,380 L680,410 L610,410" fill="none" stroke="#22c55e" stroke-width="2"
+                        stroke-dasharray="5,5" marker-end="url(#arrow-green)" filter="drop-shadow(0 0 5px #22c55e)" />
+                    <text x="690" y="395" fill="#22c55e" font-size="12">
+                        <tspan x="690" dy="-6">8. Argon2 Match</tspan>
+                        <tspan x="690" dy="14" font-size="10" opacity="0.8">{{ '{' }}Salted & Hashed{{ '}' }}</tspan>
+                    </text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim7.end" />
+                        <set attributeName="opacity" to="0" begin="anim8.end" />
+                        <animateMotion id="anim8" begin="anim7.end" dur="1.0s"
+                            path="M600,380 L680,380 L680,410 L610,410" fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 9: Django Signals (Server 600 -> DB 1050) -->
+                <g class="step step-9" opacity="0.9">
+                    <line x1="600" y1="450" x2="1040" y2="450" stroke="#a855f7" stroke-width="2" stroke-dasharray="8,8"
+                        marker-end="url(#arrow-purple)" filter="drop-shadow(0 0 5px #a855f7)" />
+                    <text x="825" y="440" text-anchor="middle" fill="#a855f7" font-size="12">9. Django Signals</text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim8.end" />
+                        <set attributeName="opacity" to="0" begin="anim9.end" />
+                        <animateMotion id="anim9" begin="anim8.end" dur="0.8s" path="M600,450 L1040,450"
+                            fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 10: Audit Logging (DB Spot: 1050) -->
+                <g class="step step-10">
+                    <text x="1065" y="470" fill="#a855f7" font-size="12">
+                        <tspan x="1065" dy="-6">10. Audit Logging</tspan>
+                        <tspan x="1065" dy="14" font-size="10" opacity="0.8">{{ '{' }}Compliance{{ '}' }}</tspan>
+                    </text>
+                    <circle cx="1050" cy="450" r="0" fill="#a855f7" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim9.end" />
+                        <animate id="anim10" attributeName="r" values="0;10;0" dur="0.5s" begin="anim9.end"
+                            fill="freeze" />
+                        <set attributeName="opacity" to="0" begin="anim10.end" />
+                    </circle>
+                </g>
+
+                <!-- Step 11: 200 OK + JWT (Server 600 -> Client 150) -->
+                <g class="step step-11" opacity="0.9">
+                    <line x1="600" y1="500" x2="160" y2="500" stroke="#06b6d4" stroke-width="2" stroke-dasharray="8,8"
+                        marker-end="url(#arrow-cyan)" filter="drop-shadow(0 0 5px #06b6d4)" />
+                    <text x="380" y="490" text-anchor="middle" fill="#06b6d4" font-size="12">
+                        <tspan x="380" dy="-14">11. 200 OK + JWT</tspan>
+                        <tspan x="380" dy="14" font-size="10" opacity="0.8">{{ '{' }}Set-Cookie: HttpOnly, Secure,
+                            SameSite=Strict{{ '}' }}</tspan>
+                    </text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim10.end" />
+                        <set attributeName="opacity" to="0" begin="anim11.end" />
+                        <animateMotion id="anim11" begin="anim10.end" dur="0.8s" path="M600,500 L160,500"
+                            fill="freeze" />
+                    </circle>
+                </g>
+
+                <!-- Step 12: Resilient Flow (Client Side) -->
+                <g class="step step-12" opacity="0.9">
+                    <path d="M150,540 L230,540 L230,570 L160,570" fill="none" stroke="#fbbf24" stroke-width="2"
+                        stroke-dasharray="5,5" marker-end="url(#arrow-gold)" filter="drop-shadow(0 0 5px #fbbf24)" />
+                    <text x="240" y="555" fill="#fbbf24" font-size="12">
+                        <tspan x="240" dy="-6">12. RESILIENT FLOW</tspan>
+                        <tspan x="240" dy="14" font-size="10" opacity="0.8">{{ '{' }}Silent Refresh Mechanism{{ '}' }}
+                        </tspan>
+                    </text>
+                    <circle r="6" fill="#ffffff" filter="url(#glow)" opacity="0">
+                        <set attributeName="opacity" to="1" begin="anim11.end" />
+                        <set attributeName="opacity" to="0" begin="anim12.end" />
+                        <animateMotion id="anim12" begin="anim11.end" dur="1.2s"
+                            path="M150,540 L230,540 L230,570 L160,570" fill="freeze" />
+                    </circle>
+                </g>
+
+            </svg>
+        </div>
+    </div>
+</div>
