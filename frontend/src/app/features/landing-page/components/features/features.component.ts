@@ -15,7 +15,6 @@ interface Feature {
   standalone: true,
   imports: [CommonModule, PageHeaderComponent, FeatureCardComponent],
   templateUrl: './features.component.html',
-  styleUrls: ['./features.component.css'],
 })
 export class FeaturesComponent {
   features: Feature[] = [

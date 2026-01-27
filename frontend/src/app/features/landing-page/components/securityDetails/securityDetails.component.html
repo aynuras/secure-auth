@@ -1,0 +1,84 @@
+<div class="flex flex-col gap-6">
+    <app-page-header title="Güvenlik Detayları"></app-page-header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mt-4">
+
+        <!-- Left Sidebar (Tabs) -->
+        <div class="lg:col-span-3 flex flex-col space-y-1">
+            <button *ngFor="let tab of tabs" (click)="setActiveTab(tab.id)"
+                class="group flex items-center w-full text-left px-4 py-3 border-l-2 transition-all duration-200"
+                [ngClass]="{
+                    'border-[#4f46e5] bg-[#4f46e5]/5': activeTabId === tab.id, 
+                    'border-transparent hover:border-gray-700 hover:bg-white/5': activeTabId !== tab.id
+                }">
+
+                <div class="flex flex-col">
+                    <span class="font-medium text-sm transition-colors duration-200"
+                        [ngClass]="{'text-white': activeTabId === tab.id, 'text-[#9ca3af] group-hover:text-gray-300': activeTabId !== tab.id}">
+                        {{ tab.title }}
+                    </span>
+                    <span class="text-xs mt-0.5"
+                        [ngClass]="{'text-[#4f46e5]': activeTabId === tab.id, 'text-[#6b7280]': activeTabId !== tab.id}">
+                        {{ tab.subtitle }}
+                    </span>
+                </div>
+            </button>
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="lg:col-span-9 relative rounded-2xl border border-gray-800 bg-[#0B0F19] overflow-hidden">
+            <div class="absolute inset-0 bg-linear-to-br from-[#4f46e5]/10 to-transparent pointer-events-none"></div>
+
+            <div class="relative p-6 md:p-8 flex flex-col gap-6">
+                <div class="flex flex-col gap-4">
+                    <h3 class="text-xl font-semibold text-white">
+                        {{ activeTab.title }}
+                    </h3>
+                    <p class="text-[#c1c6ca] leading-7 font-light">
+                        {{ activeTab.description }} {{ activeTab.details }}
+                    </p>
+                </div>
+
+                <!-- Dual Code Block Area -->
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-4">
+
+                    <!-- Backend Code -->
+                    <div
+                        class="rounded-lg border border-[#1f2937] bg-[#111827] overflow-hidden shadow-2xl h-full flex flex-col">
+                        <div
+                            class="flex items-center justify-between px-4 py-3 border-b border-[#1f2937] bg-[#1f2937]/30">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                <span class="text-xs font-bold text-gray-200 tracking-wider">BACKEND (Django)</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-gray-500">{{ activeTab.backendCodeTitle }}</span>
+                        </div>
+                        <div class="p-4 overflow-x-auto flex-1">
+                            <pre
+                                class="text-xs font-mono text-gray-300 leading-relaxed"><code>{{ activeTab.backendCode }}</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Frontend Code -->
+                    <div
+                        class="rounded-lg border border-[#1f2937] bg-[#111827] overflow-hidden shadow-2xl h-full flex flex-col">
+                        <div
+                            class="flex items-center justify-between px-4 py-3 border-b border-[#1f2937] bg-[#1f2937]/30">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                <span class="text-xs font-bold text-gray-200 tracking-wider">FRONTEND (Angular)</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-gray-500">{{ activeTab.frontendCodeTitle }}</span>
+                        </div>
+                        <div class="p-4 overflow-x-auto flex-1">
+                            <pre
+                                class="text-xs font-mono text-gray-300 leading-relaxed"><code>{{ activeTab.frontendCode }}</code></pre>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
