@@ -19,7 +19,6 @@ interface SecurityTab {
   standalone: true,
   imports: [CommonModule, PageHeaderComponent],
   templateUrl: './securityDetails.component.html',
-  styleUrls: ['./securityDetails.component.css'],
 })
 export class SecurityDetailsComponent {
   activeTabId = 'storage';
