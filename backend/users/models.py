@@ -40,6 +40,11 @@ class CustomUser(AbstractUser):
 
     username = None  # Username alanını devre dışı bırakıyoruz
     email = models.EmailField(unique=True, verbose_name='Email Adresi')
+    two_factor_enabled = models.BooleanField(default=False, verbose_name="2FA Etkin mi?")
+    
+    # Hesap Kilitleme Alanları
+    failed_login_attempts = models.IntegerField(default=0, verbose_name="Başarısız Giriş Denemeleri")
+    account_locked_until = models.DateTimeField(null=True, blank=True, verbose_name="Hesap Kilitlenme Tarihi")
 
     USERNAME_FIELD = 'email'  # Giriş yaparken kimlik olarak email kullanılacak
     REQUIRED_FIELDS = []
@@ -76,6 +81,7 @@ class AuditLog(models.Model):
     user_agent = models.TextField(null=True, blank=True) # Tarayıcı/Cihaz bilgisi
     created_at = models.DateTimeField(auto_now_add=True)
     is_success = models.BooleanField(default=True, verbose_name="İşlem Başarılı mı?")
+    details = models.TextField(null=True, blank=True, verbose_name="Detaylar/Hata Mesajı")
 
     class Meta:
         verbose_name = "Denetim Kaydı"
@@ -84,3 +90,79 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.action} - {self.created_at}"
+
+
+# Geçmiş Şifreler (Password History)
+class PasswordHistory(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='password_history'
+    )
+    password_hash = models.CharField(max_length=255, verbose_name="Şifre Özeti")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Geçmiş Şifre"
+        verbose_name_plural = "Geçmiş Şifreler"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user} - {self.created_at}"
+
+
+# Aktif Oturumlar / Refresh Tokenlar
+class UserSession(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='sessions'
+    )
+    refresh_token = models.TextField(verbose_name="Refresh Token")
+    jti = models.CharField(max_length=255, unique=True, verbose_name="Token ID (JTI)")
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(verbose_name="Geçerlilik Bitiş")
+    is_active = models.BooleanField(default=True, verbose_name="Aktif mi?")
+
+    class Meta:
+        verbose_name = "Kullanıcı Oturumu"
+        verbose_name_plural = "Kullanıcı Oturumları"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user} - {self.ip_address} - {'Aktif' if self.is_active else 'Pasif'}"
+
+
+# IP Kara Liste (Blacklist)
+class IPBlacklist(models.Model):
+    ip_address = models.GenericIPAddressField(unique=True, verbose_name="IP Adresi")
+    reason = models.TextField(null=True, blank=True, verbose_name="Engellenme Sebebi")
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Engel Bitiş Tarihi")
+    is_active = models.BooleanField(default=True, verbose_name="Aktif mi?")
+
+    class Meta:
+        verbose_name = "IP Kara Liste"
+        verbose_name_plural = "IP Kara Listesi"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.ip_address} - {self.reason or 'Sebep belirtilmedi'}"
+
+
+# IP Beyaz Liste (Whitelist)
+class IPWhitelist(models.Model):
+    ip_address = models.GenericIPAddressField(unique=True, verbose_name="IP Adresi")
+    description = models.TextField(null=True, blank=True, verbose_name="Açıklama")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True, verbose_name="Aktif mi?")
+
+    class Meta:
+        verbose_name = "IP Beyaz Liste"
+        verbose_name_plural = "IP Beyaz Listesi"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.ip_address

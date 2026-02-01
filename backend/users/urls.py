@@ -10,7 +10,6 @@ urlpatterns = [
 
     path('logout/', LogoutView.as_view(), name='auth_logout'),
 
-    # Tam adres: api/v1/auth/login/refresh/
     path('login/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
 
     path('profile/', ProfileView.as_view(), name='profile'),
