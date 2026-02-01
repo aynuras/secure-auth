@@ -1,6 +1,13 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
+import { Router } from '@angular/router';
+import { catchError, switchMap, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
   // İsteği klonlayıp (orijinal veri bozulmasın diye) içine güvenlik başlıkları ekliyoruz
   const secureReq = req.clone({
     setHeaders: {
@@ -11,7 +18,34 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     withCredentials: true, // Cookie'leri her zaman dahil et
   });
 
-  return next(secureReq);
+  return next(secureReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      // Eğer 401 hatası aldıysak ve bu istek zaten refresh isteği veya login isteği değilse
+      // Login isteği başarısız olduğunda refresh denememeliyiz, direkt hata dönmeliyiz.
+      if (
+        error.status === 401 &&
+        !req.url.includes('login/refresh') &&
+        !req.url.includes('auth/login')
+      ) {
+        return authService.refreshToken().pipe(
+          switchMap(() => {
+            // Token yenilendi, orijinal isteği tekrarla
+            return next(secureReq);
+          }),
+          catchError((refreshError) => {
+            // Refresh de başarısız oldu (Session tamamen bitti) veya refresh token geçersiz
+
+            // Client tarafında çıkış yap (Backend'e ulaşamasak bile)
+            authService.currentUser.set(null);
+
+            router.navigate(['/login']);
+            return throwError(() => refreshError);
+          }),
+        );
+      }
+      return throwError(() => error);
+    }),
+  );
 };
 
 /*

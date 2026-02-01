@@ -1,0 +1,81 @@
+<div class="h-screen flex w-full bg-[#0b0f19] text-white font-sans overflow-hidden">
+    <!-- Sol Taraf - Görsel -->
+    <div class="hidden lg:block w-1/2 h-full relative border-r border-white/5">
+        <app-auth-visual></app-auth-visual>
+    </div>
+
+    <!-- Sağ Taraf - Form -->
+    <div class="w-full lg:w-1/2 relative flex items-center justify-center p-6 overflow-hidden">
+        <!-- Mobile background gradient -->
+        <div class="absolute inset-0 bg-linear-to-br from-indigo-900/10 to-purple-900/10 lg:hidden pointer-events-none">
+        </div>
+
+        <div class="w-full max-w-100 flex flex-col justify-center z-10">
+
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-extrabold text-[#f9fafb] mb-2 tracking-wide" style="font-family: 'Montserrat'">
+                    Hoş Geldiniz!
+                </h2>
+                <p class="text-gray-400 text-sm">Devam etmek için lütfen giriş yapın.</p>
+            </div>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+                <!-- E-Posta -->
+                <app-form-input id="email" type="email" label="E-Posta" placeholder="ornek@email.com"
+                    formControlName="email" [control]="emailControl"
+                    errorMessage="Geçerli bir e-posta adresi giriniz."></app-form-input>
+
+                <!-- Parola -->
+                <app-form-input id="password" type="password" label="Parola" placeholder="********"
+                    formControlName="password" [control]="passwordControl" errorMessage="Parola gereklidir.">
+                    <div class="flex justify-end mt-1">
+                        <a routerLink="/forgot-password"
+                            class="text-[11px] text-gray-400 hover:text-indigo-400 transition-colors cursor-pointer">Parolamı
+                            Unuttum!</a>
+                    </div>
+                </app-form-input>
+
+                <!-- Error Message -->
+                <div *ngIf="errorMessage"
+                    class="text-red-500 text-sm text-center bg-red-500/10 p-2 rounded-lg border border-red-500/20">
+                    {{ errorMessage }}
+                </div>
+
+                <div class="pt-2">
+                    <app-primary-button [disabled]="loginForm.invalid" [isLoading]="isLoading">Giriş
+                        Yap</app-primary-button>
+                </div>
+
+                <div class="relative py-2">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-gray-800"></div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <span class="bg-[#0b0f19] px-4 text-xs text-gray-500">
+                            <!-- Optional OR text or just spacing -->
+                        </span>
+                    </div>
+                </div>
+
+                <app-google-button>Google ile devam et</app-google-button>
+
+                <div class="mt-8 text-center">
+                    <p class="text-sm text-gray-400">
+                        Hesabın yok mu?
+                        <a routerLink="/register"
+                            class="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline transition-all">Kayıt
+                            Ol.</a>
+                    </p>
+                </div>
+            </form>
+
+        </div>
+
+        <div
+            class="absolute bottom-6 w-full flex justify-center gap-6 text-[10px] text-gray-500/60 uppercase tracking-widest font-medium z-20">
+            <a href="#" class="hover:text-indigo-400 transition-colors">Gizlilik Politikası</a>
+            <a href="#" class="hover:text-indigo-400 transition-colors">Kullanım Koşulları</a>
+            <a href="#" class="hover:text-indigo-400 transition-colors">Destek & İletişim</a>
+        </div>
+    </div>
+</div>

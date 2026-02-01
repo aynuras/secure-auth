@@ -7,14 +7,19 @@ export class ApiService {
   private http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
 
-  // Örnek: Django'dan veri çekme metodu
+  // Django'dan veri çekme metodu
   get<T>(path: string) {
     return this.http.get<T>(`${this.baseUrl}${path}`, { withCredentials: true });
   }
 
-  // Örnek: Django'ya veri gönderme (Login vb.)
+  // Django'ya veri gönderme metodu
   post<T>(path: string, body: any) {
     return this.http.post<T>(`${this.baseUrl}${path}`, body, { withCredentials: true });
+  }
+
+  // Veri güncelleme (Profil vb.)
+  put<T>(path: string, body: any) {
+    return this.http.put<T>(`${this.baseUrl}${path}`, body, { withCredentials: true });
   }
 }
 

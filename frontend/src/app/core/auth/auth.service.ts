@@ -1,6 +1,6 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { ApiService } from '../services/api.service';
-import { tap, catchError, of } from 'rxjs';
+import { tap, catchError, of, switchMap, delay } from 'rxjs';
 
 // Kullanıcı bilgilerinin tipi (Type Safety - Güvenlik için önemli)
 export interface User {
@@ -39,15 +39,39 @@ export class AuthService {
 
   // Giriş Yapma Fonksiyonu
   login(credentials: any) {
-    return this.api.post<User>(`${this.AUTH_PATH}/login/`, credentials).pipe(
-      // tap() operatörü: Veri geçerken araya girip sinyali günceller
-      tap((user) => this.currentUser.set(user)),
+    // Backend artık user objesini dönüyor, tekrar istek atmaya gerek yok.
+    return this.api.post<any>(`${this.AUTH_PATH}/login/`, credentials).pipe(
+      tap((response) => {
+        if (response.user) {
+          this.currentUser.set(response.user);
+        }
+      }),
     );
   }
 
   // Kayıt Olma Fonksiyonu
   register(userData: any) {
     return this.api.post<User>(`${this.AUTH_PATH}/register/`, userData);
+  }
+
+  // Profil Güncelleme Fonksiyonu
+  updateProfile(data: any) {
+    // Profil güncellendikten sonra, en güncel hali için tekrar checkAuth yapıyoruz
+    return this.api.put(`${this.AUTH_PATH}/profile/`, data).pipe(
+      delay(100),
+      switchMap(() => this.checkAuth()),
+    );
+  }
+
+  // Token Yenileme Fonksiyonu
+  refreshToken() {
+    return this.api.post<any>(`${this.AUTH_PATH}/login/refresh/`, {}).pipe(
+      tap(() => {
+        // Token yenileme başarılıysa (httpOnly cookie güncellenir)
+        // İsteğe bağlı: Kullanıcı bilgisini tekrar çekebiliriz veya sadece devam ederiz
+        // Biz burada sessizce devam ediyoruz.
+      }),
+    );
   }
 
   // Çıkış Yapma Fonksiyonu

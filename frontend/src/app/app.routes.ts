@@ -18,10 +18,17 @@ export const routes: Routes = [
       import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
   },
   {
-    path: 'dashboard',
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.component').then(
+        (m) => m.ForgotPasswordComponent,
+      ),
+  },
+  {
+    path: 'profile',
     canActivate: [authGuard], // <-- Kilit burada!
     loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      import('./features/profile/profile.component').then((m) => m.ProfileComponent),
   },
   // Hatalı bir link girilirse ana sayfaya fırlat (Wildcard Route)
   { path: '**', redirectTo: '' },
