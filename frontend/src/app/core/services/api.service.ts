@@ -8,8 +8,11 @@ export class ApiService {
   private readonly baseUrl = environment.apiUrl;
 
   // Django'dan veri çekme metodu
-  get<T>(path: string) {
-    return this.http.get<T>(`${this.baseUrl}${path}`, { withCredentials: true });
+  get<T>(path: string, options: { headers?: any } = {}) {
+    return this.http.get<T>(`${this.baseUrl}${path}`, {
+      withCredentials: true,
+      headers: options.headers,
+    });
   }
 
   // Django'ya veri gönderme metodu

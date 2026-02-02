@@ -38,7 +38,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             // Client tarafında çıkış yap (Backend'e ulaşamasak bile)
             authService.currentUser.set(null);
 
-            router.navigate(['/login']);
+            // Eğer bu sessiz bir auth kontrolü ise (örn: uygulama açılışı) redirect yapma
+            if (!req.headers.has('X-Silent-Auth')) {
+              router.navigate(['/login']);
+            }
             return throwError(() => refreshError);
           }),
         );

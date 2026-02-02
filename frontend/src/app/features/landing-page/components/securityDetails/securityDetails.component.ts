@@ -33,19 +33,18 @@ export class SecurityDetailsComponent {
         "JWT token'ları localStorage yerine HttpOnly Cookie'lerde saklanarak JavaScript saldırılarına (XSS) karşı tam koruma sağlanır.",
       backendCodeTitle: 'users/views.py',
       backendCode: `response.set_cookie(
-    key='access',
+    key='access_token',
     value=access_token,
     httponly=True,  # JS cannot read this
     secure=True,    # HTTPS only
     samesite='Lax'  # CSRF protection
 )`,
       frontendCodeTitle: 'core/services/api.service.ts',
-      frontendCode: `// Tüm isteklerde çerezleri dahil et
-get<T>(path: string, body: any) {
-  return this.http.post<T>(
-    path, body,
-    { withCredentials: true }
-  );
+      frontendCode: `get<T>(path: string, options: { headers?: any } = {}) {
+  return this.http.get<T>(\`\${this.baseUrl}\${path}\`, {
+    withCredentials: true,
+    headers: options.headers,
+  });
 }`,
     },
     {
@@ -56,14 +55,14 @@ get<T>(path: string, body: any) {
       details:
         'Frontend ve Backend arasındaki iletişim, sıkı CORS politikaları ve otomatik güvenlik başlıkları ile şifrelenir ve doğrulanır.',
       backendCodeTitle: 'core/settings.py',
-      backendCode: `CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200"
-]
+      backendCode: `CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:4200').split(',')
 CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_HTTPONLY = True`,
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'`,
       frontendCodeTitle: 'core/interceptors/auth.interceptor.ts',
-      frontendCode: `req.clone({
+      frontendCode: `const secureReq = req.clone({
   setHeaders: {
+    Accept: 'application/json',
     'X-Requested-With': 'XMLHttpRequest'
   },
   withCredentials: true
@@ -79,16 +78,20 @@ CSRF_COOKIE_HTTPONLY = True`,
       backendCodeTitle: 'users/views.py',
       backendCode: `class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
-        # Yetkisiz erişim engellenir
-        return Response(data)`,
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)`,
       frontendCodeTitle: 'core/guards/auth.guard.ts',
       frontendCode: `if (authService.isLoggedIn()) {
   return true;
 }
-// Unauthorized access redirect
-return router.parseUrl('/login');`,
+
+return authService.checkAuth().pipe(
+  map((user) => {
+    return user ? true : router.createUrlTree(['/login']);
+  })
+);`,
     },
   ];
 

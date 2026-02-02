@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, PLATFORM_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   provideHttpClient,
@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http';
 import { provideAppInitializer } from '@angular/core';
 import { inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -35,7 +36,14 @@ export const appConfig: ApplicationConfig = {
     // Uygulama başlatılırken kimlik doğrulama kontrolü yap
     provideAppInitializer(() => {
       const authService = inject(AuthService);
-      return authService.checkAuth();
+      const platformId = inject(PLATFORM_ID);
+
+      // Sadece tarayıcı ortamında (Client Side) auth kontrolü yap
+      // Server Side (SSR) sırasında auth cookie'lere erişemeyiz ve gereksiz bekleme yaratırız
+      if (isPlatformBrowser(platformId)) {
+        return authService.checkAuth();
+      }
+      return; // Server tarafında hiçbir şey yapma
     }),
   ],
 };
