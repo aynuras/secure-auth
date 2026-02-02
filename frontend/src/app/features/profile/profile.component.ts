@@ -11,11 +11,20 @@ import {
 import { AuthService } from '../../core/auth/auth.service';
 import { PrimaryButtonComponent } from '../../shared/components/primary-button/primary-button.component';
 import { FormInputComponent } from '../../shared/components/form-input/form-input.component';
+import { ToggleSwitchComponent } from '../../shared/components/toggle-switch/toggle-switch.component';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PrimaryButtonComponent, FormInputComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    PrimaryButtonComponent,
+    FormInputComponent,
+    ToggleSwitchComponent,
+    ConfirmationModalComponent,
+  ],
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent {
@@ -27,6 +36,13 @@ export class ProfileComponent {
   profileForm: FormGroup;
   isSaving = false;
   successMessage: string | null = null;
+
+  // Modal State
+  isModalOpen = false;
+  modalTitle = '';
+  modalMessage = '';
+  modalType: 'info' | 'success' | 'warning' | 'danger' = 'warning';
+  pendingAction: (() => void) | null = null;
 
   // Formatlı isim gösterimi
   displayName = computed(() => {
@@ -100,6 +116,41 @@ export class ProfileComponent {
     } else {
       this.profileForm.markAllAsTouched();
     }
+  }
+
+  onToggle2FA(): void {
+    const isEnabled = this.user()?.two_factor_enabled;
+    const action = isEnabled ? 'kapatmak' : 'açmak';
+
+    this.modalTitle = isEnabled ? '2FA Kapatılsın mı?' : '2FA Açılsın mı?';
+    this.modalMessage = `Hesabınız için 2 adımlı doğrulamayı ${action} üzeresiniz. Bu işlem güvenliğinizi etkileyecektir.`;
+    this.modalType = isEnabled ? 'danger' : 'success';
+
+    this.pendingAction = () => {
+      this.authService.toggle2FA().subscribe({
+        next: () => {
+          // Başarılı olduğunda modalı kapat, kullanıcı zaten güncellendi (signal)
+          this.closeModal();
+        },
+        error: () => {
+          this.closeModal();
+          alert('İşlem sırasında bir hata oluştu.');
+        },
+      });
+    };
+
+    this.isModalOpen = true;
+  }
+
+  confirmModal() {
+    if (this.pendingAction) {
+      this.pendingAction();
+    }
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.pendingAction = null;
   }
 
   onLogout(): void {

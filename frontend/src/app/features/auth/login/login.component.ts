@@ -31,8 +31,13 @@ import { AuthService } from '../../../core/auth/auth.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  verifyForm: FormGroup; // 2FA Formu
   isLoading = false;
   errorMessage: string | null = null;
+
+  // 2FA State Management
+  step: 'login' | '2fa' = 'login';
+  tempEmail: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -42,6 +47,10 @@ export class LoginComponent {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
+    });
+
+    this.verifyForm = this.fb.group({
+      code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
     });
   }
 
@@ -53,14 +62,27 @@ export class LoginComponent {
     return this.loginForm.get('password') as FormControl;
   }
 
+  get codeControl(): FormControl {
+    return this.verifyForm.get('code') as FormControl;
+  }
+
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = null;
 
       this.authService.login(this.loginForm.value).subscribe({
-        next: () => {
-          this.router.navigate(['/profile']);
+        next: (response: any) => {
+          // response tipi any olarak açık bırakıldı
+          this.isLoading = false;
+
+          if (response.step === '2fa_required') {
+            this.step = '2fa';
+            this.tempEmail = response.email;
+            this.errorMessage = null;
+          } else {
+            this.router.navigate(['/profile']);
+          }
         },
         error: (err) => {
           this.isLoading = false;
@@ -68,11 +90,38 @@ export class LoginComponent {
           this.errorMessage = 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.';
         },
         complete: () => {
-          this.isLoading = false;
+          // Loading login adımında kapandı.
         },
       });
     } else {
       this.loginForm.markAllAsTouched();
+    }
+  }
+
+  onVerifySubmit(): void {
+    if (this.verifyForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = null;
+
+      const data = {
+        email: this.tempEmail,
+        code: this.verifyForm.value.code,
+      };
+
+      this.authService.verify2FA(data).subscribe({
+        next: () => {
+          this.router.navigate(['/profile']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.detail || 'Kod doğrulanamadı.';
+        },
+        complete: () => {
+          this.isLoading = false;
+        },
+      });
+    } else {
+      this.verifyForm.markAllAsTouched();
     }
   }
 }

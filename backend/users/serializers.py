@@ -5,7 +5,73 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from .utils import log_audit
 
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 User = get_user_model()
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Oturum takibini sıkılaştırmak için RefreshToken JTI bilgisini Access Token'a gömer.
+    Böylece Access Token ile gelen isteklerin hangi oturuma ait olduğu doğrulanabilir.
+    """
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Refresh token'ın JTI (ID) bilgisini Access token'ın da taşıyacağı bir claim'e kopyalıyoruz
+        # Normalde Access Token'ın kendi JTI'sı vardır, bu nedenle 'refresh_jti' olarak ekliyoruz.
+        token['refresh_jti'] = token['jti']
+
+        return token
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        # Güvenlik nedeniyle email kayıtlı olmasa bile hata dönmemeliyiz (User Enumeration önlemek için)
+        # Ancak burada serializer validation yapıyoruz, view içinde bu durumu handle edeceğiz.
+        return value
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True, required=True)
+    uid = serializers.CharField()
+    token = serializers.CharField()
+
+    def validate_password(self, value):
+        try:
+            validate_password(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(list(e.messages))
+        return value
+
+    def validate(self, attrs):
+        uid = attrs.get('uid')
+        token = attrs.get('token')
+        
+        try:
+            uid = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError({"token": "Geçersiz bağlantı."})
+
+        if not default_token_generator.check_token(user, token):
+            raise serializers.ValidationError({"token": "Bağlantı geçersiz veya süresi dolmuş."})
+
+        attrs['user'] = user
+        return attrs
+
+    def save(self):
+        password = self.validated_data['password']
+        user = self.validated_data['user']
+        user.set_password(password)
+        user.save()
+        return user
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,7 +79,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'full_name')
+        fields = ('id', 'email', 'first_name', 'last_name', 'full_name', 'two_factor_enabled')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -143,3 +209,8 @@ class UserUpdateSerializer(serializers.Serializer):
 
         instance.save()
         return instance
+
+
+class Verify2FASerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=6, min_length=6)

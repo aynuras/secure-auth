@@ -14,12 +14,16 @@
 
             <div class="mb-8 text-center">
                 <h2 class="text-3xl font-extrabold text-[#f9fafb] mb-2 tracking-wide" style="font-family: 'Montserrat'">
-                    Hoş Geldiniz!
+                    {{ step === 'login' ? 'Hoş Geldiniz!' : '2FA Doğrulama' }}
                 </h2>
-                <p class="text-gray-400 text-sm">Devam etmek için lütfen giriş yapın.</p>
+                <p class="text-gray-400 text-sm">
+                    {{ step === 'login' ? 'Devam etmek için lütfen giriş yapın.' : 'E-Posta adresinize gönderilen kodu
+                    giriniz.' }}
+                </p>
             </div>
 
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+            <!-- LOGIN STEP -->
+            <form *ngIf="step === 'login'" [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
                 <!-- E-Posta -->
                 <app-form-input id="email" type="email" label="E-Posta" placeholder="ornek@email.com"
                     formControlName="email" [control]="emailControl"
@@ -66,6 +70,30 @@
                             class="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline transition-all">Kayıt
                             Ol.</a>
                     </p>
+                </div>
+            </form>
+
+            <!-- 2FA STEP -->
+            <form *ngIf="step === '2fa'" [formGroup]="verifyForm" (ngSubmit)="onVerifySubmit()" class="space-y-5">
+                <app-form-input id="code" type="text" label="Doğrulama Kodu" placeholder="123456" formControlName="code"
+                    [control]="codeControl" errorMessage="6 haneli kodu giriniz."></app-form-input>
+
+                <!-- Error Message -->
+                <div *ngIf="errorMessage"
+                    class="text-red-500 text-sm text-center bg-red-500/10 p-2 rounded-lg border border-red-500/20">
+                    {{ errorMessage }}
+                </div>
+
+                <div class="pt-2">
+                    <app-primary-button [disabled]="verifyForm.invalid" [isLoading]="isLoading">Doğrula & Giriş
+                        Yap</app-primary-button>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button type="button" (click)="step = 'login'"
+                        class="text-sm text-gray-400 hover:text-indigo-400 transition-colors">
+                        Geri Dön (İptal)
+                    </button>
                 </div>
             </form>
 

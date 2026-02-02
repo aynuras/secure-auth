@@ -24,7 +24,17 @@ class CookieJWTAuthentication(JWTAuthentication):
             raise AuthenticationFailed("Hesabınız devre dışı bırakılmıştır.", code="user_inactive")
 
         # 2. Session kontrolü (Logout yaparsa veya session silinirse erişim kesilir)
-        if not UserSession.objects.filter(user=user, is_active=True).exists():
-            raise AuthenticationFailed("Geçerli bir oturum bulunamadı.", code="session_invalid")
+        # Sadece "herhangi bir oturum" değil, "BU oturum" aktif mi diye bakıyoruz.
+        refresh_jti = validated_token.get('refresh_jti')
+        
+        session_query = UserSession.objects.filter(user=user, is_active=True)
+        
+        # Eğer token 'refresh_jti' claim'ine sahipse, nokta atışı kontrol yap.
+        # (Eski tokenlar için geriye dönük uyumluluk isteniyorsa else bloğu eklenebilir ama güvenli olan budur)
+        if refresh_jti:
+            session_query = session_query.filter(jti=refresh_jti)
+            
+        if not session_query.exists():
+            raise AuthenticationFailed("Oturumunuz sonlanmış veya geçersiz.", code="session_invalid")
 
         return user, validated_token

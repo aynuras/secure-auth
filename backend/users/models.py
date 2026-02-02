@@ -45,6 +45,10 @@ class CustomUser(AbstractUser):
     # Hesap Kilitleme Alanları
     failed_login_attempts = models.IntegerField(default=0, verbose_name="Başarısız Giriş Denemeleri")
     account_locked_until = models.DateTimeField(null=True, blank=True, verbose_name="Hesap Kilitlenme Tarihi")
+    
+    # 2FA (OTP) Alanları
+    otp_code = models.CharField(max_length=6, null=True, blank=True, verbose_name="Tek Kullanımlık Şifre")
+    otp_created_at = models.DateTimeField(null=True, blank=True, verbose_name="OTP Oluşturulma Tarihi")
 
     USERNAME_FIELD = 'email'  # Giriş yaparken kimlik olarak email kullanılacak
     REQUIRED_FIELDS = []

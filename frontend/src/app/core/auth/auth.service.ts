@@ -9,6 +9,7 @@ export interface User {
   first_name?: string;
   last_name?: string;
   full_name?: string; // Django @property olarak tanımladığım alan
+  two_factor_enabled?: boolean; // 2FA Durumu
 }
 
 @Injectable({ providedIn: 'root' })
@@ -28,13 +29,17 @@ export class AuthService {
 
   // Kimlik Doğrulama Kontrol Fonksiyonu
   checkAuth() {
-    return this.api.get<User>(`${this.AUTH_PATH}/profile/`).pipe(
-      tap((user) => this.currentUser.set(user)), // Başarılı olursa kullanıcıyı set et
-      catchError(() => {
-        this.currentUser.set(null); // Hata olursa (401 vb.) kullanıcıyı null yap
-        return of(null); // Hatayı yut ve akışın bozulmadan devam etmesini sağla
-      }),
-    );
+    // X-Silent-Auth: 401 hatası alırsa interceptor'ın kullanıcıyı login sayfasına yönlendirmesini engeller.
+    // Bu sayede Landing Page'i ziyaret eden kayıtsız kullanıcılar login sayfasına düşmez.
+    return this.api
+      .get<User>(`${this.AUTH_PATH}/profile/`, { headers: { 'X-Silent-Auth': 'true' } })
+      .pipe(
+        tap((user) => this.currentUser.set(user)), // Başarılı olursa kullanıcıyı set et
+        catchError(() => {
+          this.currentUser.set(null); // Hata olursa (401 vb.) kullanıcıyı null yap
+          return of(null); // Hatayı yut ve akışın bozulmadan devam etmesini sağla
+        }),
+      );
   }
 
   // Giriş Yapma Fonksiyonu
@@ -44,6 +49,35 @@ export class AuthService {
       tap((response) => {
         if (response.user) {
           this.currentUser.set(response.user);
+        }
+      }),
+    );
+  }
+
+  // 2FA Doğrulama Fonksiyonu
+  verify2FA(data: { email: string; code: string }) {
+    return this.api.post<any>(`${this.AUTH_PATH}/login/2fa/verify/`, data).pipe(
+      tap((response) => {
+        if (response.user) {
+          this.currentUser.set(response.user);
+        }
+      }),
+    );
+  }
+
+  // 2FA Açma/Kapama (Toggle)
+  toggle2FA() {
+    return this.api.post<any>(`${this.AUTH_PATH}/profile/2fa/toggle/`, {}).pipe(
+      tap(() => {
+        // Veritabanı gecikmesini önlemek için (Optimistic Update)
+        // Tekrar istek atmak yerine elimizdeki veriyi güncelliyoruz.
+        const current = this.currentUser();
+        if (current) {
+          const updatedUser = {
+            ...current,
+            two_factor_enabled: !current.two_factor_enabled,
+          };
+          this.currentUser.set(updatedUser);
         }
       }),
     );
@@ -72,6 +106,14 @@ export class AuthService {
         // Biz burada sessizce devam ediyoruz.
       }),
     );
+  }
+
+  requestPasswordReset(email: string) {
+    return this.api.post(`${this.AUTH_PATH}/request-password-reset/`, { email });
+  }
+
+  confirmPasswordReset(data: any) {
+    return this.api.post(`${this.AUTH_PATH}/reset-password/`, data);
   }
 
   // Çıkış Yapma Fonksiyonu
