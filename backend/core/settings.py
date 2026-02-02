@@ -50,7 +50,9 @@ MIDDLEWARE = [
 ]
 
 # Angular'ın erişimine izin ver
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:4200').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:4200,http://127.0.0.1:4200').split(',')
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:4200', 'http://127.0.0.1:4200']
 
 # HttpOnly Cookie kullanımı için şart
 CORS_ALLOW_CREDENTIALS = True
@@ -163,16 +165,30 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'LEEWAY': timedelta(seconds=30),  # Zaman senkronizasyonu payı
 }
+
+# Frontend URL
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:4200')
+
+# JWT Cookie Süreleri (Saniye Cinsinden)
+JWT_ACCESS_COOKIE_AGE = 3600 # 1 Saat
+JWT_REFRESH_COOKIE_AGE = 7 * 24 * 3600 # 7 Gün
 
 
 # Sadece HTTPS üzerinden gönderilmesini sağlar (Canlı ortamda)
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 
+# E-posta göndermek yerine terminale basar (Development / Test)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+DEFAULT_FROM_EMAIL = 'webmaster@localhost'
+
 # JavaScript'in çerezlere erişimini engeller (XSS Koruması)
 SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
 
 # CSRF saldırılarını önlemek için sıkılaştırılmış kontrol
 CSRF_COOKIE_SAMESITE = 'Lax'
