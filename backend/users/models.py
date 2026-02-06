@@ -71,6 +71,7 @@ class AuditLog(models.Model):
         ('LOGIN', 'Giriş Yapma'),
         ('LOGOUT', 'Çıkış Yapma'),
         ('PASSWORD_CHANGE', 'Şifre Değiştirme'),
+        ('SYSTEM_DIAGNOSTICS', 'Sistem Tanılama'),
     ]
 
     # user silinse bile logun kalması için SET_NULL kullandık

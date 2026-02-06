@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -76,10 +77,18 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.ReadOnlyField()
+    links = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'full_name', 'two_factor_enabled')
+        fields = ('id', 'email', 'first_name', 'last_name', 'full_name', 'two_factor_enabled', 'links')
+
+    def get_links(self, obj):
+        request = self.context.get('request')
+        return {
+            "self": reverse('profile', request=request, format=None),
+            "system_diagnostics": reverse('system-diagnostics-token', request=request, format=None)
+        }
 
 
 class RegisterSerializer(serializers.ModelSerializer):

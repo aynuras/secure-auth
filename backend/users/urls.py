@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, LoginView, LogoutView, CookieTokenRefreshView, ProfileView, Verify2FAView, TwoFactorToggleView, PasswordResetRequestView, PasswordResetConfirmView
+from .views import RegisterView, LoginView, LogoutView, CookieTokenRefreshView, ProfileView, Verify2FAView, TwoFactorToggleView, PasswordResetRequestView, PasswordResetConfirmView, GenerateDiagnosticsTokenView
 
 urlpatterns = [
     # Tam adres: api/v1/auth/register/
@@ -18,4 +18,7 @@ urlpatterns = [
 
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile/2fa/toggle/', TwoFactorToggleView.as_view(), name='profile_2fa_toggle'),
+    
+    # System Diagnostics
+    path('system/ops/diagnostics/generate-token/', GenerateDiagnosticsTokenView.as_view(), name='system-diagnostics-token'),
 ]

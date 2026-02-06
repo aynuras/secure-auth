@@ -92,7 +92,7 @@ class LoginView(TokenObtainPairView):
                 user.failed_login_attempts = 0
                 user.save()
 
-        # 3. Şifre Kontrolü (SimpleJWT öncesi manuel kontrol -> 2FA için)
+        # 3. Parola Kontrolü (SimpleJWT öncesi manuel kontrol -> 2FA için)
         if user and user.check_password(password):
             # --- 2FA KONTROLÜ ---
             if user.two_factor_enabled:
@@ -112,7 +112,9 @@ class LoginView(TokenObtainPairView):
         # 4. Standart Login (SimpleJWT)
         try:
             response = super().post(request, *args, **kwargs)
-        except (TokenError, InvalidToken, AuthenticationFailed):
+        except Exception:
+            # SimpleJWT veya Django auth hataları (Yanlış parola vb.)
+            # Exception ne olursa olsun, bir response dönmeliyiz ki loglama akışı devam edebilsin.
             response = Response({"detail": "Giriş başarısız"}, status=status.HTTP_401_UNAUTHORIZED)
 
         if response.status_code == 200:
@@ -150,13 +152,19 @@ class LoginView(TokenObtainPairView):
 
         else:
             # Login Başarısız
-            response = Response(GENERIC_ERROR, status=status.HTTP_401_UNAUTHORIZED)
+            # Güvenlik notu: 'GENERIC_ERROR' kullanarak kullanıcının varlığını belli etmiyoruz
+            # Ama backend tarafında loglama yapıyoruz.
+            
+            # Eğer response super().post()'tan exception yiyerek geldiyse, içeriği düzenle
+            if response.status_code == 401:
+                response = Response(GENERIC_ERROR, status=status.HTTP_401_UNAUTHORIZED)
+            
             if user:
                 user.failed_login_attempts += 1
                 if user.failed_login_attempts >= 5:
                     user.account_locked_until = timezone.now() + timedelta(minutes=15)
                 user.save()
-                log_audit(request=request, user=user, action='LOGIN', is_success=False, details="Hatalı Şifre")
+                log_audit(request=request, user=user, action='LOGIN', is_success=False, details="Hatalı Parola")
             else:
                  log_audit(request=request, user=None, action='LOGIN', is_success=False, details=f"Bilinmeyen Kullanıcı: {email}")
 
@@ -401,3 +409,28 @@ class ProfileView(APIView):
             return Response({"message": "Profil bilgileriniz başarıyla güncellendi."}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GenerateDiagnosticsTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        ip = get_client_ip(request)
+        import uuid
+        log_audit(
+            request=request, 
+            user=user, 
+            action='SYSTEM_DIAGNOSTICS', 
+            is_success=True, 
+            details=f"POTENTIAL ATTACK DETECTED: User attempted to access hidden diagnostic endpoint. IP: {ip}"
+        )
+        fake_token = f"diag-{uuid.uuid4().hex[:8]}-pending-approval"
+        return Response({
+            "token": fake_token, 
+            "status": "initiated", 
+            "message": "Diagnostic token generated. Waiting for supervisor approval."
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
