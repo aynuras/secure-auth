@@ -28,16 +28,12 @@ Proje 4 ana güvenlik katmanı üzerine inşa edilmiştir:
 
 - **Sanitization & Validation:** Backend ve Frontend tarafında katı veri şeması (Schema Validation) kontrolleri.
 
----
-
 ## 🛠️ Teknolojiler
 
 - **Backend:** Django Rest Framework, Python 3.12+
 - **Frontend:** Angular 17+, RxJS, Signal Store
 - **Database:** PostgreSQL
 - **Security:** Argon2, JWT (SimpleJWT), Django-Ipware
-
----
 
 ## ⚙️ Kurulum Adımları
 
@@ -125,7 +121,6 @@ Proje 4 ana güvenlik katmanı üzerine inşa edilmiştir:
    ```
    Uygulama `http://localhost:4200` adresinde çalışacaktır.
 
----
 
 ## ℹ️ E-Posta Simülasyonu & 2FA
 
