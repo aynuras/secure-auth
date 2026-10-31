@@ -22,9 +22,8 @@
                     <span class="text-[10px] font-mono text-rose-400 mb-1 tracking-[0.2em]">LAYER 01</span>
                     <h3 class="text-base font-bold text-white mb-1 shadow-rose-500/20 drop-shadow-lg">The Perimeter</h3>
                     <p class="text-gray-400 text-xs leading-snug max-w-sm font-light">
-                        Güvenlik sunucuya ulaşmadan başlar. <span class="text-rose-300">Strict CORS</span> ve <span
-                            class="text-rose-300">TLS tünelleme</span> ile MitM saldırıları
-                        engellenir.
+                        Uygulamaya gelen istekler, <span class="text-rose-300">CORS politikaları</span>
+                        ve <span class="text-rose-300">authentication</span> kontrolleri üzerinden sınırlandırılır.
                     </p>
                 </div>
             </div>
@@ -44,9 +43,8 @@
                     <div class="flex items-center gap-3">
                         <span class="material-icons-round text-rose-400 text-lg">security</span>
                         <div class="flex flex-col">
-                            <span class="text-[9px] text-rose-400/70 font-mono tracking-wider">MITIGATION
-                                PROTOCOL</span>
-                            <span class="text-xs font-semibold text-gray-200">MitM & Script Injection</span>
+                            <span class="text-[9px] text-rose-400/70 font-mono tracking-wider">REQUEST CONTROL</span>
+                            <span class="text-xs font-semibold text-gray-200">CORS Policy & Authentication</span>
                         </div>
                     </div>
                 </div>
@@ -70,8 +68,9 @@
                     <div class="flex items-center gap-3 md:flex-row-reverse">
                         <span class="material-icons-round text-orange-400 text-lg">admin_panel_settings</span>
                         <div class="flex flex-col">
-                            <span class="text-[9px] text-orange-400/70 font-mono tracking-wider">GATEKEEPER</span>
-                            <span class="text-xs font-semibold text-gray-200">Brute Force & DDoS</span>
+                            <span class="text-[9px] text-orange-400/70 font-mono tracking-wider">BRUTE FORCE
+                                PROTECTION</span>
+                            <span class="text-xs font-semibold text-gray-200">Rate Limiting & Account Lockout</span>
                         </div>
                     </div>
                 </div>
@@ -88,9 +87,9 @@
                     <h3 class="text-base font-bold text-white mb-1 shadow-orange-500/20 drop-shadow-lg">Access Control
                     </h3>
                     <p class="text-gray-400 text-xs leading-snug max-w-sm font-light">
-                        Kimlik turnikesi. <span class="text-orange-300">Rate Limiting</span> ve <span
-                            class="text-orange-300">Custom Middleware</span> ile yetkisiz girişler mantık katmanına
-                        ulaşamaz.
+                        Authentication akışında<span class="text-orange-300">rate limiting</span> ve <span
+                            class="text-orange-300"> account lockout ve middleware</span> kontrolleri uygulanarak
+                        yetkisiz erişim ve brute-force girişimleri sınırlandırılır.
                     </p>
                 </div>
             </div>
@@ -105,10 +104,12 @@
 
                 <div class="inline-flex flex-col items-start md:items-end">
                     <span class="text-[10px] font-mono text-indigo-400 mb-1 tracking-[0.2em]">LAYER 03</span>
-                    <h3 class="text-base font-bold text-white mb-1 shadow-indigo-500/20 drop-shadow-lg">Data Shield</h3>
+                    <h3 class="text-base font-bold text-white mb-1 shadow-indigo-500/20 drop-shadow-lg">Data Validation
+                    </h3>
                     <p class="text-gray-400 text-xs leading-snug max-w-sm font-light">
-                        <span class="text-indigo-300">Zero Trust</span> mimarisi. Hem Client (Zod) hem Server tarafında
-                        katı veri doğrulama.
+                        Client ve server tarafında
+                        <span class="text-indigo-300">input validation</span> uygulanarak beklenmeyen ve geçersiz
+                        verilerin işlenmesi sınırlandırılır.
                     </p>
                 </div>
             </div>
@@ -126,8 +127,8 @@
                     <div class="flex items-center gap-3">
                         <span class="material-icons-round text-indigo-400 text-lg">verified_user</span>
                         <div class="flex flex-col">
-                            <span class="text-[9px] text-indigo-400/70 font-mono tracking-wider">INTEGRITY CHECK</span>
-                            <span class="text-xs font-semibold text-gray-200">SQLi & XSS Nullified</span>
+                            <span class="text-[9px] text-indigo-400/70 font-mono tracking-wider">INPUT VALIDATION</span>
+                            <span class="text-xs font-semibold text-gray-200">Client & Server-Side Validation</span>
                         </div>
                     </div>
                 </div>
@@ -149,8 +150,9 @@
                     <div class="flex items-center gap-3 md:flex-row-reverse">
                         <span class="material-icons-round text-emerald-400 text-lg">enhanced_encryption</span>
                         <div class="flex flex-col">
-                            <span class="text-[9px] text-emerald-400/70 font-mono tracking-wider">VAULT</span>
-                            <span class="text-xs font-semibold text-gray-200">Argon2 Hashing</span>
+                            <span class="text-[9px] text-emerald-400/70 font-mono tracking-wider">PASSWORD
+                                PROTECTION</span>
+                            <span class="text-xs font-semibold text-gray-200">Argon2 Password Hashing</span>
                         </div>
                     </div>
                 </div>
@@ -166,8 +168,8 @@
                     <h3 class="text-base font-bold text-white mb-1 shadow-emerald-500/20 drop-shadow-lg">Secure Storage
                     </h3>
                     <p class="text-gray-400 text-xs leading-snug max-w-sm font-light">
-                        Verinin son durağı. Şifreler <span class="text-emerald-300">Argon2</span> ile hashlenir.
-                        Veritabanı izoledir.
+                        Kullanıcı parolaları Argon2 <span class="text-emerald-300">Argon2</span> kullanılarak güvenli
+                        şekilde hashlenir. Hassas kimlik doğrulama verileri doğrudan parola olarak saklanmaz.
                     </p>
                 </div>
             </div>
@@ -182,9 +184,10 @@
 
                 <div class="inline-flex flex-col items-start md:items-end">
                     <span class="text-[10px] font-mono text-cyan-400 mb-1 tracking-[0.2em]">LAYER 05</span>
-                    <h3 class="text-base font-bold text-white mb-1 shadow-cyan-500/20 drop-shadow-lg">Audit & Core</h3>
+                    <h3 class="text-base font-bold text-white mb-1 shadow-cyan-500/20 drop-shadow-lg">Audit Logging</h3>
                     <p class="text-gray-400 text-xs leading-snug max-w-sm font-light">
-                        Tüm işlemler loglanır. Şüpheli aktiviteler anında tespit edilir. Adli izlenebilirlik.
+                        Authentication ve diğer kritik işlemler kayıt altına alınarak sistem aktivitelerinin geriye
+                        dönük incelenebilmesi sağlanır.
                     </p>
                 </div>
             </div>
@@ -202,8 +205,9 @@
                     <div class="flex items-center gap-3">
                         <span class="material-icons-round text-cyan-400 text-lg">visibility</span>
                         <div class="flex flex-col">
-                            <span class="text-[9px] text-cyan-400/70 font-mono tracking-wider">SYSTEM PULSE</span>
-                            <span class="text-xs font-semibold text-gray-200">Real-time Logging</span>
+                            <span class="text-[9px] text-cyan-400/70 font-mono tracking-wider">SECURITY EVENT
+                                LOGGING</span>
+                            <span class="text-xs font-semibold text-gray-200">Authentication & Audit Logs</span>
                         </div>
                     </div>
                 </div>

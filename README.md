@@ -1,41 +1,125 @@
-# Secure Auth - Enterprise Grade Authentication System
+# Secure Auth — Güvenli Kimlik Doğrulama Sistemi
 
-Bu proje, **Defense in Depth (Savunma Derinliği)** stratejisi temel alınarak geliştirilmiş, modern güvenlik standartlarına (OWASP, NIST) tam uyumlu, uçtan uca bir kimlik doğrulama mimarisidir. Canlı ortam simülasyonu ile güvenli yazılım geliştirme pratiklerini (Best Practices) sergilemeyi amaçlar.
+**Django REST Framework, Angular ve PostgreSQL** kullanılarak geliştirilmiş, güvenlik odaklı bir kimlik doğrulama sistemidir.
 
-## 🚀 Mimari & Güvenlik Özellikleri
+Proje; modern authentication ve session security mekanizmalarını uygulamalı olarak incelemek ve **Defense in Depth (Savunma Derinliği)** yaklaşımını birden fazla güvenlik katmanı üzerinden göstermek amacıyla geliştirilmiştir.
 
-Proje 4 ana güvenlik katmanı üzerine inşa edilmiştir:
+Güvenlik tasarımında **OWASP ve NIST güvenlik rehberlerinden** yararlanılmıştır.
 
-### 1. Advanced Identity Management (Kimlik Yönetimi)
+**Not:** Bu proje eğitim ve portföy amacıyla geliştirilmiştir. Production ortamında kullanılmak üzere tasarlanmamıştır.
 
-- **HttpOnly Cookie Architecture:** JWT (Access & Refresh) tokenları, JavaScript erişimine kapalı `HttpOnly` ve `Secure` çerezlerde saklanarak XSS saldırıları etkisiz hale getirildi.
-- **Session Hardening:** Refresh Token rotasyonu ve sunucu taraflı token takibi (JTI Tracking) ile oturumlar tam denetim altına alındı. Çalınan oturumlar anlık olarak sunucudan sonlandırılabilir.
-- **Strict 2FA:** Giriş akışına entegre, zaman aşımı kontrollü ve zorunlu tutulabilen İki Faktörlü Doğrulama (OTP) mekanizması.
+## Projenin Amacı
 
-### 2. Enterprise Security Features (Kurumsal Güvenlik)
+Bu projenin temel amacı aşağıdaki konularda pratik deneyim kazanmaktır:
 
-- **Argon2 Hashing:** Parolalar, GPU tabanlı saldırılara dirençli Argon2 algoritması ile şifrelenir.
-- **Brute-Force Protection:** IP tabanlı hız sınırlaması (Throttling) ve 5 başarısız deneme sonrası otomatik **Account Lockout** (Hesap Kilitleme).
-- **Password Policies:** Kullanıcıların son 3 parolasını tekrar kullanmasını engelleyen geçmiş kontrolü (`PasswordHistory`) ve karmaşıklık zorunluluğu.
+- Authentication ve authorization
+- JWT session management
+- Password security
+- Multi-factor authentication
+- Token invalidation
+- Rate limiting
+- Audit logging
+- Defense in Depth
+- Secure API development
 
-### 3. Secure Architecture (Güvenli Altyapı)
+## Güvenlik Özellikleri
 
-- **Defense-in-Depth:** Sadece tek bir noktaya güvenilmez; IP Whitelist/Blacklist, Rate Limiting ve Audit Logging katmanları ile sistem korunur.
-- **Audit Logging:** Kim, ne zaman, hangi IP'den, ne işlem yaptı? Tüm kritik işlemler (`LOGIN`, `REGISTER`, `PASSWORD_CHANGE`) detaylıca veritabanına loglanır.
-- **Information Leakage Prevention:** Hata mesajları saldırgana bilgi vermeyecek şekilde minimize edilmiştir (User Enumeration Prevention).
+### 1. Kimlik Doğrulama ve Oturum Güvenliği
 
-### 4. Input Integrity (Veri Bütünlüğü)
+- **JWT Authentication:** Kısa ömürlü Access Token ve Refresh Token yapısı kullanılmıştır.
+- **HttpOnly & Secure Cookies:** Token'lar JavaScript tarafından doğrudan erişilemeyen HttpOnly ve Secure cookie'lerde tutulmaktadır.
+- **Refresh Token Rotation:** Refresh Token yenilendiğinde mevcut token'ın yerine yeni bir token oluşturularak çalınmış token'ların kullanım riskinin azaltılması hedeflenmiştir.
+- **JTI Tracking:** Refresh Token'lar benzersiz JWT ID (JTI) değerleri üzerinden sunucu tarafında takip edilmektedir.
+- **Session Invalidation:** Sunucu tarafındaki JTI takibi sayesinde aktif oturumlar gerektiğinde geçersiz hale getirilebilmektedir.
+- **Two-Factor Authentication (2FA):** OTP tabanlı iki faktörlü doğrulama authentication akışına entegre edilmiştir.
 
-- **Sanitization & Validation:** Backend ve Frontend tarafında katı veri şeması (Schema Validation) kontrolleri.
+### 2. Parola ve Hesap Güvenliği
 
-## 🛠️ Teknolojiler
+- **Argon2 Password Hashing:** Kullanıcı parolaları Argon2 kullanılarak hash'lenmektedir.
+- **Rate Limiting:** Tekrarlanan authentication denemelerini sınırlandırmak amacıyla IP tabanlı rate limiting uygulanmıştır.
+- **Account Lockout:** Belirli sayıda başarısız giriş denemesinden sonra hesap kilitleme mekanizması uygulanmıştır.
+- **Password History:** Önceki parolalar takip edilerek parola tekrar kullanımının önüne geçilmesi amaçlanmıştır.
+- **Password Policy:** Parola karmaşıklığı için belirli kurallar uygulanmıştır.
+
+### 3. Defense in Depth
+
+Sistem tek bir güvenlik mekanizmasına bağlı kalmak yerine birden fazla koruma katmanı kullanmaktadır:
+
+- IP tabanlı allow/block kontrolleri
+- Rate limiting
+- Account lockout
+- Session invalidation
+- Audit logging
+- Input validation
+- Authentication error handling
+
+Bu yaklaşımın amacı, tek bir güvenlik mekanizmasının başarısız olması durumunda ek koruma katmanlarının bulunmasını sağlamaktır.
+
+### 4. Audit Logging
+
+Güvenlik açısından önemli işlemler kayıt altına alınmaktadır. Örneğin:
+
+- Login denemeleri
+- Kullanıcı kayıt işlemleri
+- Parola değişiklikleri
+- Authentication işlemleri
+- Kaynak IP bilgileri
+
+Bu kayıtlar authentication aktivitelerinin incelenmesi ve şüpheli işlemlerin araştırılması amacıyla kullanılabilir.
+
+### 5. User Enumeration Prevention
+
+Authentication sırasında hata mesajlarının gereksiz bilgi vermesi engellenerek, saldırganın belirli bir kullanıcı hesabının sistemde bulunup bulunmadığını anlamasının zorlaştırılması hedeflenmiştir.
+
+### 6. Input Validation
+
+Frontend ve backend tarafında gelen verilerin beklenen format ve şemaya uygunluğunu kontrol etmek için validation mekanizmaları uygulanmıştır.
+
+## Mimari
+
+Proje iki ana uygulamadan oluşmaktadır:
+
+```text
+secure-auth/
+├── backend/
+│   └── Django REST Framework
+│
+└── frontend/
+    └── Angular
+```
+
+### Backend
+
+Backend aşağıdaki işlemlerden sorumludur:
+
+- Authentication ve authorization
+- JWT yönetimi
+- Kullanıcı yönetimi
+- Parola güvenliği
+- 2FA
+- Rate limiting
+- Session invalidation
+- Audit logging
+- Veritabanı işlemleri
+
+### Frontend
+
+Angular frontend aşağıdaki işlemler için kullanıcı arayüzü sağlamaktadır:
+
+- Kullanıcı kaydı
+- Login
+- 2FA doğrulaması
+- Parola işlemleri
+- Authentication akışları
+
+## Teknolojiler
 
 - **Backend:** Django Rest Framework, Python 3.12+
 - **Frontend:** Angular 17+, RxJS, Signal Store
 - **Database:** PostgreSQL
-- **Security:** Argon2, JWT (SimpleJWT), Django-Ipware
+- **Security:** Argon2, JWT (SimpleJWT), django-ipware
 
-## ⚙️ Kurulum Adımları
+## Kurulum Adımları
 
 ### 1. Gereksinimler
 
@@ -45,14 +129,14 @@ Proje 4 ana güvenlik katmanı üzerine inşa edilmiştir:
 
 ### 2. Backend Kurulumu
 
-1. **Projeyi Klonlayın:**
+1. **Projeyi klonlayın:**
 
    ```bash
    git clone <repo-url>
    cd secure-auth/backend
    ```
 
-2. **Sanal Ortamı Oluşturun ve Aktif Edin:**
+2. **Sanal ortamı oluşturun ve aktif edin:**
 
    ```bash
    python -m venv .venv
@@ -121,16 +205,13 @@ Proje 4 ana güvenlik katmanı üzerine inşa edilmiştir:
    ```
    Uygulama `http://localhost:4200` adresinde çalışacaktır.
 
-
-## ℹ️ E-Posta Simülasyonu & 2FA
+## E-Posta Simülasyonu & 2FA
 
 Projenin canlı ortam (Production) ayağı olmadığı için gerçek bir SMTP sunucusu yerine Django'nun **Console Backend**'i kullanılmıştır.
 
-- **Neden?** 3. parti servis bağımlılığı olmadan 2FA mantığının (kod üretme, saklama, doğrulama) ve mimarisinin doğru çalıştığını gösterebilmek için.
-- **Nasıl Çalışır?** Register veya Login aşamasında gönderilen OTP kodları ve aktivasyon linkleri **direkt olarak terminal ekranına** düşer. Akışı tamamlamak için terminaldeki kodu kullanabilirsiniz.
-- **Production Entegrasyonu:** Gerçek bir projede, kod yapısında hiçbir değişiklik yapmadan, sadece `.env` dosyasındaki SMTP ayarları girilerek Gmail veya AWS SES kolayca bağlanabilir.
-
----
+- Third party service bağımlılığı olmadan 2FA mantığının ve mimarisinin doğru çalıştığını gösterebilmek için tercih edilmiştir.
+- Register veya Login aşamasında gönderilen OTP kodları ve aktivasyon linkleri terminal ekranına düşer. Akışı tamamlamak için terminaldeki kod kullanılabilir.
+- Production ortamında email backend'i uygun bir SMTP servisi ile değiştirilebilir.
 
 ## ⚠️ Güvenlik Notu
 

@@ -21,40 +21,43 @@ export class FeaturesComponent {
     {
       title: 'Secure Token Storage',
       subtitle: 'JWT via HttpOnly Cookies',
-      description: "XSS saldırılarını önler; script'ler token'ı okuyamaz.",
+      description:
+        "Token'ların JavaScript tarafından okunmasını engelleyerek token maruziyetini azaltır.",
       iconName: 'vpn_key',
     },
     {
-      title: 'Resilient Auth Flow',
-      subtitle: 'Silent Refresh Mechanism',
+      title: 'Refresh Token Rotation',
+      subtitle: 'Secure Session Management',
       description:
-        "Kullanıcı deneyimini bozmadan, kısa ömürlü Access Token'lar ile güvenliği maksimize eder.",
+        "Refresh Token'lar yenilendiğinde rotate edilir ve JTI takibi ile aktif oturumlar gerektiğinde geçersiz kılınabilir.",
       iconName: 'autorenew',
     },
     {
-      title: 'Data Integrity',
-      subtitle: 'Zod/Django Serializer Validation',
-      description: 'Hem Client hem Server tarafında "Zero Trust" veri doğrulaması.',
+      title: 'Input Validation',
+      subtitle: 'Client & Server-Side Validation',
+      description:
+        'İstemci ve sunucu tarafında gelen verilerin beklenen format ve kurallara uygunluğu kontrol edilir.',
       iconName: 'verified_user',
     },
     {
-      title: 'Audit & Compliance',
+      title: 'Audit Logging',
       subtitle: 'Automated Event Logging',
       description:
-        'Her kritik işlem (giriş, şifre değişimi, hata) Django Signal ile izlenir ve loglanır.',
+        'Login, registration ve parola değişikliği gibi kritik işlemler güvenlik denetimi için kayıt altına alınır.',
       iconName: 'history_edu',
     },
     {
       title: 'Brute Force Protection',
-      subtitle: 'Account Lockout Policy',
+      subtitle: 'Rate Limiting & Account Lockout',
       description:
-        'Ardışık hatalı girişlerde hesabı dondurarak kaba kuvvet saldırılarını engeller.',
+        'Tekrarlanan başarısız girişler sınırlandırılır ve belirli denemeler sonrasında hesap kilitleme uygulanır.',
       iconName: 'shield',
     },
     {
-      title: 'Session Isolation',
-      subtitle: 'Strict CORS & CSRF Protection',
-      description: 'Sadece izinli kökenlerden gelen talepleri kabul eden katı köken kontrolü.',
+      title: 'CSRF & CORS Protection',
+      subtitle: 'Controlled Cross-Origin Access',
+      description:
+        'Cross-origin istekler sınırlandırılır ve authentication akışlarında CSRF riskini azaltmaya yönelik kontroller uygulanır.',
       iconName: 'fingerprint',
     },
   ];
