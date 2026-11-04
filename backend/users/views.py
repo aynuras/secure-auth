@@ -372,7 +372,8 @@ class LogoutView(APIView):
                 token.blacklist()
                 
                 # Oturumu veritabanında da kapat (UserSession)
-                UserSession.objects.filter(jti=jti).update(is_active=False)
+                session_id = token.get('refresh_jti', token['jti'])
+                UserSession.objects.filter(jti=session_id).update(is_active=False)
         except Exception:
             pass
 
