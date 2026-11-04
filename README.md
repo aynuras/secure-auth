@@ -1,79 +1,61 @@
 # Secure Auth — Güvenli Kimlik Doğrulama Sistemi
 
-**Django REST Framework, Angular ve PostgreSQL** kullanılarak geliştirilmiş, güvenlik odaklı bir kimlik doğrulama sistemidir.
+**Django REST Framework, Angular ve PostgreSQL** kullanılarak geliştirilmiş, güvenlik odaklı bir kimlik doğrulama örnek projedisir.
 
-Proje; modern authentication ve session security mekanizmalarını uygulamalı olarak incelemek ve **Defense in Depth (Savunma Derinliği)** yaklaşımını birden fazla güvenlik katmanı üzerinden göstermek amacıyla geliştirilmiştir.
+Amaç; modern authentication ve session yönetimi mekanizmalarını uygulamalı olarak öğrenmek ve **Defense in Depth** fikrini birden fazla katman üzerinden denemekti. Tasarımda OWASP ve NIST rehberlerinden ilham alındı; bu rehberlerle tam uyumlu olduğu iddia edilmemektedir.
 
-Güvenlik tasarımında **OWASP ve NIST güvenlik rehberlerinden** yararlanılmıştır.
-
-**Not:** Bu proje eğitim ve portföy amacıyla geliştirilmiştir. Production ortamında kullanılmak üzere tasarlanmamıştır.
+**Not:** Bu proje eğitim ve portföy amaçlıdır. Production ortamında kullanılmak üzere tasarlanmamıştır. Geliştirme sürecinde yapay zekâ araçlarından yardım alınmış olup; kodlar sonradan gözden geçirilip eksikleri aşağıdaki "Bilinen Sınırlamalar" bölümünde belirtilmiştir.
 
 ## Projenin Amacı
 
-Bu projenin temel amacı aşağıdaki konularda pratik deneyim kazanmaktır:
+Aşağıdaki konularda pratik deneyim kazanmak:
 
 - Authentication ve authorization
-- JWT session management
-- Password security
-- Multi-factor authentication
-- Token invalidation
+- JWT ile oturum yönetimi
+- Parola güvenliği
+- İki faktörlü doğrulama (2FA)
+- Oturum geçersiz kılma
 - Rate limiting
 - Audit logging
 - Defense in Depth
 - Secure API development
 
-## Güvenlik Özellikleri
+## Uygulanan Güvenlik Özellikleri
 
-### 1. Kimlik Doğrulama ve Oturum Güvenliği
+### 1. Kimlik Doğrulama ve Oturum
 
-- **JWT Authentication:** Kısa ömürlü Access Token ve Refresh Token yapısı kullanılmıştır.
-- **HttpOnly & Secure Cookies:** Token'lar JavaScript tarafından doğrudan erişilemeyen HttpOnly ve Secure cookie'lerde tutulmaktadır.
-- **Refresh Token Rotation:** Refresh Token yenilendiğinde mevcut token'ın yerine yeni bir token oluşturularak çalınmış token'ların kullanım riskinin azaltılması hedeflenmiştir.
-- **JTI Tracking:** Refresh Token'lar benzersiz JWT ID (JTI) değerleri üzerinden sunucu tarafında takip edilmektedir.
-- **Session Invalidation:** Sunucu tarafındaki JTI takibi sayesinde aktif oturumlar gerektiğinde geçersiz hale getirilebilmektedir.
-- **Two-Factor Authentication (2FA):** OTP tabanlı iki faktörlü doğrulama authentication akışına entegre edilmiştir.
+- **JWT:** Access ve REfresh Token yapısı (SimpleJWT).
+- **HttpOnly Cookie:** Token'lar response body'e dönmez, HttpOnly cookie olarak set edilir. `Secure` bayrağı `DEBUG=False` iken aktif olur. `SameSite=Lax` kullanılır.
+- **Sunucu tarafı oturum takibi:** Refresh Token'ın JTI değeri veritabanında (`UserSession`) tutulur. Access Token içine `refresh_jti` claim'i eklenir ve her istekte ilgili oturumun aktif olup olmadığı kontrol edilir. Logout ve hesabın pasife alınması erişimi kesebilir.
+- **Refresh Token Rotation:** `ROTATE_REFRESH_TOKEN` açıktır. Rotation sonrası oturum kaydının güncellenmesi henüz tamamlanmamıştır (bkz. Bilinen Sınırlamalar). 
+- **E-posta ile OTP (2FA):** Parola doğrulamasından sonra kullanıcıya 6 haneli, 3 dakika geçerli bir kod gönderilir. (TOTP/Authenticator uygulaması desteği yoktur.) 
 
 ### 2. Parola ve Hesap Güvenliği
 
 - **Argon2 Password Hashing:** Kullanıcı parolaları Argon2 kullanılarak hash'lenmektedir.
 - **Rate Limiting:** Tekrarlanan authentication denemelerini sınırlandırmak amacıyla IP tabanlı rate limiting uygulanmıştır.
-- **Account Lockout:** Belirli sayıda başarısız giriş denemesinden sonra hesap kilitleme mekanizması uygulanmıştır.
-- **Password History:** Önceki parolalar takip edilerek parola tekrar kullanımının önüne geçilmesi amaçlanmıştır.
-- **Password Policy:** Parola karmaşıklığı için belirli kurallar uygulanmıştır.
+- **Account Lockout:** 5 başarısız giriş denemesinden sonra 15 dakika hesap kilitleme mekanizması uygulanmıştır.
+- **Password History:** PArola değiştirirken son 3 parola ile aynı parola reddedilir.
+- **Password Policy:** Django'nun yerleşik validator'ları kullanılmıştır (minimum uzunluk, yaygın parola, sadece rakan, kullanıcı bilgisine benzerlik). Büyük harf/sembol gibi karmaşıklık kuralı yoktur.
 
 ### 3. Defense in Depth
 
-Sistem tek bir güvenlik mekanizmasına bağlı kalmak yerine birden fazla koruma katmanı kullanmaktadır:
+Tek bir mekanizmaya güvenmemek için birkaç basit katman birlikte kullanılır:
 
-- IP tabanlı allow/block kontrolleri
+- IP blacklist/whitelist kontrolü (register, login, 2FA ve refresh endpoint'lerinde)
 - Rate limiting
-- Account lockout
+- Hesap kilitleme
 - Session invalidation
 - Audit logging
-- Input validation
-- Authentication error handling
-
-Bu yaklaşımın amacı, tek bir güvenlik mekanizmasının başarısız olması durumunda ek koruma katmanlarının bulunmasını sağlamaktır.
+- Backend input validation
 
 ### 4. Audit Logging
 
-Güvenlik açısından önemli işlemler kayıt altına alınmaktadır. Örneğin:
+Login denemeleri, kayıt, parola ve profil değişiklikleri gibi bazı olaylar Ip ve user-agent bilgisiyle `AuditLog` tablosuna yazılır. Eski kayıtları silmek için bir Celery görevi tanımlıdır.
 
-- Login denemeleri
-- Kullanıcı kayıt işlemleri
-- Parola değişiklikleri
-- Authentication işlemleri
-- Kaynak IP bilgileri
+### 5. User Enumeration'a Karşı Önlemler
 
-Bu kayıtlar authentication aktivitelerinin incelenmesi ve şüpheli işlemlerin araştırılması amacıyla kullanılabilir.
-
-### 5. User Enumeration Prevention
-
-Authentication sırasında hata mesajlarının gereksiz bilgi vermesi engellenerek, saldırganın belirli bir kullanıcı hesabının sistemde bulunup bulunmadığını anlamasının zorlaştırılması hedeflenmiştir.
-
-### 6. Input Validation
-
-Frontend ve backend tarafında gelen verilerin beklenen format ve şemaya uygunluğunu kontrol etmek için validation mekanizmaları uygulanmıştır.
+Login'de hatalı e-posta ve hatalı parola aynı mesajı döner. Kayıt ve parola sıfırlama isteklerinde de hesabın var oluğ olmadığını açık etmeyen genel mesajlar kullanılır. Bu alan henüz tam değildir (bkz. Bilinen Sınırlamalar).
 
 ## Mimari
 
@@ -81,41 +63,18 @@ Proje iki ana uygulamadan oluşmaktadır:
 
 ```text
 secure-auth/
-├── backend/
-│   └── Django REST Framework
-│
-└── frontend/
-    └── Angular
+├── backend/       # Django REST Framework
+└── frontend/      # Angular
 ```
 
-### Backend
+**Backend:** Kimlik doğrulama, JWT ve oturum yönetimi, kullanıcı yönetimi, 2FA, rate limiting, audit log, veritabanı.
 
-Backend aşağıdaki işlemlerden sorumludur:
-
-- Authentication ve authorization
-- JWT yönetimi
-- Kullanıcı yönetimi
-- Parola güvenliği
-- 2FA
-- Rate limiting
-- Session invalidation
-- Audit logging
-- Veritabanı işlemleri
-
-### Frontend
-
-Angular frontend aşağıdaki işlemler için kullanıcı arayüzü sağlamaktadır:
-
-- Kullanıcı kaydı
-- Login
-- 2FA doğrulaması
-- Parola işlemleri
-- Authentication akışları
+**Frontend:** Register, login, 2FA doğrulama, profil ve parola işlemleri için arayüz.
 
 ## Teknolojiler
 
 - **Backend:** Django Rest Framework, Python 3.12+
-- **Frontend:** Angular 17+, RxJS, Signal Store
+- **Frontend:** Angular 17+, RxJS, Signals
 - **Database:** PostgreSQL
 - **Security:** Argon2, JWT (SimpleJWT), django-ipware
 
@@ -125,7 +84,7 @@ Angular frontend aşağıdaki işlemler için kullanıcı arayüzü sağlamaktad
 
 - Python 3.12+
 - PostgreSQL
-- Node.js (Frontend için)
+- Node.js
 
 ### 2. Backend Kurulumu
 
@@ -136,7 +95,7 @@ Angular frontend aşağıdaki işlemler için kullanıcı arayüzü sağlamaktad
    cd secure-auth/backend
    ```
 
-2. **Sanal ortamı oluşturun ve aktif edin:**
+2. **Sanal ortamı oluşturup aktif edin:**
 
    ```bash
    python -m venv .venv
@@ -154,7 +113,9 @@ Angular frontend aşağıdaki işlemler için kullanıcı arayüzü sağlamaktad
    pip install django djangorestframework djangorestframework-simplejwt django-cors-headers psycopg2-binary django-ipware argon2-cffi python-dotenv celery redis
    ```
 
-4. **Çevresel Değişkenleri (.env) Ayarlayın:**
+`celery` ve `redis` yalnızca eski audit loglarını temizleyen opsiyonel görev için gereklidir; uygulamanın geri kalanı bunlar olmadan çalışır.
+
+4. **`.env` Dosyasını Ayarlayın:**
    `backend/` dizini altında `.env` dosyası oluşturun:
 
    ```env
@@ -165,7 +126,7 @@ Angular frontend aşağıdaki işlemler için kullanıcı arayüzü sağlamaktad
    # Veritabanı
    DB_NAME=secure_auth_db
    DB_USER=postgres
-   DB_PASSWORD=sifreniz
+   DB_PASSWORD=parolaniz
    DB_HOST=localhost
    DB_PORT=5432
 
@@ -173,46 +134,43 @@ Angular frontend aşağıdaki işlemler için kullanıcı arayüzü sağlamaktad
    FRONTEND_URL=http://localhost:4200
    ```
 
-5. **Veritabanı ve Migration:**
+5. **Migration ve Sunucu:**
 
    ```bash
    python manage.py makemigrations users
    python manage.py migrate
-   ```
-
-6. **Sunucuyu Başlatın:**
-   ```bash
    python manage.py runserver
    ```
 
 ### 3. Frontend Kurulumu
 
-1. **Dizine Gidin:**
-
    ```bash
    cd ../frontend
-   ```
-
-2. **Paketleri Yükleyin:**
-
-   ```bash
    npm install
-   ```
-
-3. **Uygulamayı Başlatın:**
-   ```bash
    npm start
    ```
-   Uygulama `http://localhost:4200` adresinde çalışacaktır.
+
+Uygulama `http://localhost:4200` adresinde çalışacaktır.
 
 ## E-Posta Simülasyonu & 2FA
 
-Projenin canlı ortam (Production) ayağı olmadığı için gerçek bir SMTP sunucusu yerine Django'nun **Console Backend**'i kullanılmıştır.
+Proje canlıya alınmadığı için gerçek SMTP yerine Django'nun **Console Backend**'i kullanılır. OTP kodları ve parola sıfırlama bağlantıları terminale yazdırılır; akışı tamamlamak için oradaki değer kullanılır. Gerçek kullanımda uygun bir SMTP servisi ayarlanmalıdır.
 
-- Third party service bağımlılığı olmadan 2FA mantığının ve mimarisinin doğru çalıştığını gösterebilmek için tercih edilmiştir.
-- Register veya Login aşamasında gönderilen OTP kodları ve aktivasyon linkleri terminal ekranına düşer. Akışı tamamlamak için terminaldeki kod kullanılabilir.
-- Production ortamında email backend'i uygun bir SMTP servisi ile değiştirilebilir.
+## Bilinen Sınırlamalar
+
+Bu proje bir öğrenme çalışmasıdır ve bilinen eksikleri vardır:
+
+- **Rotation sonrası oturum takibi:** Refresh sonrası `UserSession` kaydı güncellenmiyor ve eski refresh token blacklist'e alınmıyor. Bu yüzden rotation tam anlamıyla güvenli değil ve logout, yenilenmiş token'larda access token süresi dolana kadar etkisiz kalabilir.
+- **CSRF:** API cookie ile kimlik doğrulaması yapıyor, ancak koruma şu an esas olarak `SameSite=Lax`'e dayanıyor. Frontend ve API farklı site'larda çalışırsa ek önlem gerekir.
+- **Proxy / IP güvenilirliği:** Rate limiting ve IP kontrolü, istemci IP'sinin doğru belirlenmesine bağlı. Bir reverse proxy arkasında `X-Forwarded-For` ayarları (ör. `NUM_PROXIES`) yapılandırılmalıdır. Throttle sayaçları için paylaşımlı bir cache (ör. Redis) tanımlı değildir.
+- **2FA:** OTP veritabanında düz metin tutuluyor, yanlış deneme için ayrı bir sınır yok ve bilinen/bilinmeyen e-posta için verilen hata mesajları farklı.
+- **Parola değişimi/sıfırlama:** Parola değişince diğer oturumlar otomatik kapatılmıyor; sıfırlama akışında password history kontrolü uygulanmıyor.
+- **Audit log:** Bazı olay tipleri (ör. parola sıfırlama) için action alanı uzunluk sınırı nedeniyle kaydedilemeyebilir; logout olayı loglanmıyor.
+- **E-Posta:** Kayıtta e-posta doğrulaması yok; e-posta büyük/küçük harf normalizasyonu her akışta tutarlı değil.
+- **Oturum kaydı:** UserSession tablosunda ham refresh token saklanıyor; yalnızca JTI yeterli olurdu.
+- **Test ve bağımlılıklar:** Test kapsamı çok sınırlı (auth akışları için kapsamlı test yok) ve requirements.txt ile sürümler sabitlenmemiş. Frontend’de eşzamanlı 401'lerde birden fazla refresh isteği atılabiliyor; frontend testleri yalnızca iskelet düzeyinde.
+- **Celery:** Log temizleme görevi tanımlı, ancak periyodik çalıştırma yapılandırması eksik.
 
 ## ⚠️ Güvenlik Notu
 
-Bu proje eğitim ve örnekleme amaçlıdır. Canlı ortamda (Production) kullanmadan önce `DEBUG=False` yapılmalı ve SSL (HTTPS) sertifikası zorunlu tutulmalıdır.
+Canlı ortamda (Production) kullanmadan önce `DEBUG=False` yapılmalı ve SSL (HTTPS) sertifikası zorunlu tutulmalıdır.
