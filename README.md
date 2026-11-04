@@ -1,6 +1,6 @@
 # Secure Auth — Güvenli Kimlik Doğrulama Sistemi
 
-**Django REST Framework, Angular ve PostgreSQL** kullanılarak geliştirilmiş, güvenlik odaklı bir kimlik doğrulama örnek projedisir.
+**Django REST Framework, Angular ve PostgreSQL** kullanılarak geliştirilmiş, güvenlik odaklı bir kimlik doğrulama örnek projesidir.
 
 Amaç; modern authentication ve session yönetimi mekanizmalarını uygulamalı olarak öğrenmek ve **Defense in Depth** fikrini birden fazla katman üzerinden denemekti. Tasarımda OWASP ve NIST rehberlerinden ilham alındı; bu rehberlerle tam uyumlu olduğu iddia edilmemektedir.
 
@@ -24,10 +24,10 @@ Aşağıdaki konularda pratik deneyim kazanmak:
 
 ### 1. Kimlik Doğrulama ve Oturum
 
-- **JWT:** Access ve REfresh Token yapısı (SimpleJWT).
+- **JWT:** Access ve Refresh Token yapısı (SimpleJWT).
 - **HttpOnly Cookie:** Token'lar response body'e dönmez, HttpOnly cookie olarak set edilir. `Secure` bayrağı `DEBUG=False` iken aktif olur. `SameSite=Lax` kullanılır.
 - **Sunucu tarafı oturum takibi:** Refresh Token'ın JTI değeri veritabanında (`UserSession`) tutulur. Access Token içine `refresh_jti` claim'i eklenir ve her istekte ilgili oturumun aktif olup olmadığı kontrol edilir. Logout ve hesabın pasife alınması erişimi kesebilir.
-- **Refresh Token Rotation:** `ROTATE_REFRESH_TOKEN` açıktır. Rotation sonrası oturum kaydının güncellenmesi henüz tamamlanmamıştır (bkz. Bilinen Sınırlamalar). 
+- **Refresh Token Rotation:** `ROTATE_REFRESH_TOKENS` açıktır. Rotation sonrası oturum kaydının güncellenmesi henüz tamamlanmamıştır (bkz. Bilinen Sınırlamalar). 
 - **E-posta ile OTP (2FA):** Parola doğrulamasından sonra kullanıcıya 6 haneli, 3 dakika geçerli bir kod gönderilir. (TOTP/Authenticator uygulaması desteği yoktur.) 
 
 ### 2. Parola ve Hesap Güvenliği
@@ -35,8 +35,8 @@ Aşağıdaki konularda pratik deneyim kazanmak:
 - **Argon2 Password Hashing:** Kullanıcı parolaları Argon2 kullanılarak hash'lenmektedir.
 - **Rate Limiting:** Tekrarlanan authentication denemelerini sınırlandırmak amacıyla IP tabanlı rate limiting uygulanmıştır.
 - **Account Lockout:** 5 başarısız giriş denemesinden sonra 15 dakika hesap kilitleme mekanizması uygulanmıştır.
-- **Password History:** PArola değiştirirken son 3 parola ile aynı parola reddedilir.
-- **Password Policy:** Django'nun yerleşik validator'ları kullanılmıştır (minimum uzunluk, yaygın parola, sadece rakan, kullanıcı bilgisine benzerlik). Büyük harf/sembol gibi karmaşıklık kuralı yoktur.
+- **Password History:** Parola değiştirirken son 3 parola ile aynı parola reddedilir.
+- **Password Policy:** Django'nun yerleşik validator'ları kullanılmıştır (minimum uzunluk, yaygın parola, sadece rakam, kullanıcı bilgisine benzerlik). Büyük harf/sembol gibi karmaşıklık kuralı yoktur.
 
 ### 3. Defense in Depth
 
@@ -55,7 +55,7 @@ Login denemeleri, kayıt, parola ve profil değişiklikleri gibi bazı olaylar I
 
 ### 5. User Enumeration'a Karşı Önlemler
 
-Login'de hatalı e-posta ve hatalı parola aynı mesajı döner. Kayıt ve parola sıfırlama isteklerinde de hesabın var oluğ olmadığını açık etmeyen genel mesajlar kullanılır. Bu alan henüz tam değildir (bkz. Bilinen Sınırlamalar).
+Login'de hatalı e-posta ve hatalı parola aynı mesajı döner. Kayıt ve parola sıfırlama isteklerinde de hesabın var olup olmadığını açık etmeyen genel mesajlar kullanılır. Bu alan henüz tam değildir (bkz. Bilinen Sınırlamalar).
 
 ## Mimari
 
